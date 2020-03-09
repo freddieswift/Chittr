@@ -1,41 +1,69 @@
 import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert } from 'react-native';
-class loginScreen extends Component{
+
+class signUpScreen extends Component{
 	constructor(props) {
         super(props);
 		this.state={
+			given_name:'',
+			family_name:'',
 			email:'',
 			password:''
 		};
     }
 	
-	login(){
-		
-		// return fetch("http://10.0.2.2:3333/
-		
-		// )
-		
-		Alert.alert(
-			this.state.email,
-			this.state.password,
-			[{text: 'OK', onPress: () => console.log('OK Pressed')}]
-		)
+	createAccount(){
+		return fetch("http://10.0.2.2:3333/api/v0.0.5/user",
+		{
+			method: 'POST',
+			body: JSON.stringify({
+				given_name: this.state.given_name,
+				family_name: this.state.family_name,
+				email: this.state.email,
+				password: this.state.password
+			})
+		})
+		.then((response) => {
+			Alert.alert("Successfully Created Account" + response.text)
+		})
+		.catch((error) => {
+			Alert.alert("Unable to Create Account")
+		});
 	}
 	
 
 	render(){
 		return(
+		
 			<View style={styles.container}>
 				<View style={styles.headerBar}>
 					<Text style={styles.chittrHeaderText}>Chittr</Text>
 				</View>
 				
 				<View style={styles.infoContainer}>
+				
+					
+					<Text style={styles.info}>First Name</Text>
+					<TextInput
+						style={styles.inputField}
+						onChangeText={(given_name) => this.setState({given_name})}
+					/>
+					
+					
+					<Text style={styles.info}>Surname</Text>
+					<TextInput
+						style={styles.inputField}
+						onChangeText={(family_name) => this.setState({family_name})}
+					/>
+					
+					
 					<Text style={styles.info}>Email</Text>
 					<TextInput
 						style={styles.inputField}
 						onChangeText={(email) => this.setState({email})}
 					/>
+					
+					
 					<Text style={styles.info}>Password</Text>
 					<TextInput
 						style={styles.inputField}
@@ -43,24 +71,11 @@ class loginScreen extends Component{
 						onChangeText={(password) => this.setState({password})}
 					/>
 					
-					<View style={styles.buttonContainer}>
-						<Button
-						color='palevioletred'
-							onPress={() => this.login()}
-							title="Login"
-						/>
-					</View>
+				
 					<View style={styles.buttonContainer}>
 						<Button
 							color='palevioletred'
-							onPress={() => this.props.navigation.navigate('home')}
-							title="Back"
-						/>
-					</View>
-					<View style={styles.buttonContainer}>
-						<Button
-							color='palevioletred'
-							onPress={() => this.props.navigation.navigate('signUp')}
+							onPress={() => this.createAccount()}
 							title="Sign Up"
 						/>
 					</View>
@@ -112,4 +127,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default loginScreen;
+export default signUpScreen;

@@ -22,10 +22,15 @@ class homeScreen extends Component {
 					<View>
 						<Button
 							onPress={() => this.props.navigation.navigate('login')}
-							title="Press"
+							title="Login"
 						/>
 					</View>
 					<Text style={styles.chittrHeaderText}>Chittr</Text>	
+					<View>
+						<Button
+							title="Search"
+						/>
+					</View>
 					
 					
 					
