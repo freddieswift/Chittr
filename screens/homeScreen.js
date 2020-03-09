@@ -1,6 +1,6 @@
-/* import React, { Component } from 'react';
-import { Text, View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-class chittr extends Component {
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
+class homeScreen extends Component {
     constructor(props) {
         super(props);
 		this.state = {
@@ -19,16 +19,23 @@ class chittr extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.headerBar}>
-                    <View style={styles.userPhoto}/>
-                    <Text style={styles.chittrHeaderText}>Chittr</Text>
-                    <View style={styles.userPhoto} />
-                </View>
+					<View>
+						<Button
+							onPress={() => this.props.navigation.navigate('login')}
+							title="Press"
+						/>
+					</View>
+					<Text style={styles.chittrHeaderText}>Chittr</Text>	
+					
+					
+					
+				</View>
 				<View style = {styles.chittList}>
 					<FlatList
 						data={this.state.chitsData}
 						renderItem={({item}) => 
 							<View style={styles.chitt}>
-								<View style>
+								<View >
 									<Text style = {styles.userInfoText}>{item.user.given_name + " " + item.user.family_name}</Text>
 								</View>
 								<View>
@@ -72,18 +79,8 @@ const styles = StyleSheet.create({
         alignItems: 'stretch'
     },
 	
-	//user info and time stamp at top of chit
-	/* chitUserInfoContainer: {
-		backgroundColor: 'palevioletred',
-	}, */
 	
-	//content of chit 
-	/* chitContentContainer: {
-		
-		
-	}, */
-	
-	/* //the whole chit//
+	//the whole chit
 	chitt: {
 		flexDirection: 'column',
 		alignItems: 'stretch',
@@ -92,14 +89,14 @@ const styles = StyleSheet.create({
 		borderColor: 'grey',
 		borderWidth: 1,
 		backgroundColor: 'white'
-	}, */
+	},
 	
-	/* // flatlist to hold chitts//
+	// flatlist to hold chitts
 	chittList: {
 		flex: 8
 	},
 
-	// header at top of screen//
+	// header at top of screen
     headerBar: {
 		flex: 1,
         flexDirection: 'row',
@@ -119,38 +116,28 @@ const styles = StyleSheet.create({
 	userInfoText: {
 		fontSize: 15,
 		paddingLeft: 5
-	}, */
+	},
 	
-	//chit content text//
-	/* chittText: {
+	//chit content text
+	chittText: {
 		fontSize: 25,
 		paddingLeft: 5
-	}, */
+	},
 
-    /* chittrHeaderText: {
+    chittrHeaderText: {
         color: 'white',
         fontFamily: 'Courier New',
         fontSize: 30,
-    }, */
+    },
 
 
-/* });
-export default chittr */ 
-
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-
-import homeScreen from './screens/homeScreen';
-import loginScreen from './screens/loginScreen';
-
-const AppStackNav = createStackNavigator({
-	
-	home: { screen: homeScreen, navigationOptions: {headerShown: false}},
-	login: { screen: loginScreen, navigationOptions: {headerShown: false}},
-	
-	
 });
+export default homeScreen;
 
-const AppContainer = createAppContainer(AppStackNav)
-
-export default AppContainer;
+/* <View style={styles.userPhoto}/>
+					
+					<Text style={styles.chittrHeaderText}>Chittr</Text>	
+					
+					<TouchableOpacity onPress={() => this.props.navigation.navigate('login')}>
+						<View stlye={styles.userPhoto}/>
+					</TouchableOpacity> */
