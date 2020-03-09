@@ -16,6 +16,9 @@ class signUpScreen extends Component{
 		return fetch("http://10.0.2.2:3333/api/v0.0.5/user",
 		{
 			method: 'POST',
+			headers:{
+				"Content-Type": "application/json"
+			},
 			body: JSON.stringify({
 				given_name: this.state.given_name,
 				family_name: this.state.family_name,
@@ -24,7 +27,17 @@ class signUpScreen extends Component{
 			})
 		})
 		.then((response) => {
-			Alert.alert("Successfully Created Account" + response.text)
+			if (response.status == 400){
+				Alert.alert("Unable to Create Account", "Please check if email is valid or for any missing fields")
+			}
+			else if(response.status == 201){
+				Alert.alert("Successfully Created Account")
+				this.props.navigation.navigate('login')
+			}
+			else {
+				Alert.alert("Unable to Create Account")
+			}
+			
 		})
 		.catch((error) => {
 			Alert.alert("Unable to Create Account")

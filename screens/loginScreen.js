@@ -7,21 +7,17 @@ class loginScreen extends Component{
 			email:'',
 			password:''
 		};
+		//emailFromSignUp = this.props.navigation.getParam(email, '')
+		
     }
 	
 	login(){
-		
-		// return fetch("http://10.0.2.2:3333/
-		
-		// )
-		
 		Alert.alert(
 			this.state.email,
 			this.state.password,
 			[{text: 'OK', onPress: () => console.log('OK Pressed')}]
 		)
 	}
-	
 
 	render(){
 		return(
@@ -33,6 +29,7 @@ class loginScreen extends Component{
 				<View style={styles.infoContainer}>
 					<Text style={styles.info}>Email</Text>
 					<TextInput
+						value={this.state.email}
 						style={styles.inputField}
 						onChangeText={(email) => this.setState({email})}
 					/>
