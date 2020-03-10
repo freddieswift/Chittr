@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, Button, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 class loginScreen extends Component{
 	constructor(props) {
         super(props);
 		this.state={
 			email:'',
 			password:'',
-			token: ''
+			token: '',
+			loggedIn: false
 		};
     }
 	
@@ -32,10 +33,11 @@ class loginScreen extends Component{
 			}
 			else if(status == 200){
 				const json = await response.json();
-				//console.log("IT FUCKING WORKS", json.token)
-				this.setState({
-					token: json.token,
-				})
+				/* this.setState({
+					
+					loggedIn: true
+				}) */
+				this.setInfo(json.token, 'true22')
 				this.props.navigation.navigate('home')
 			}
 			else {
@@ -43,6 +45,15 @@ class loginScreen extends Component{
 			}
 		} catch (error) {
 			console.log(error)
+		}
+	}
+	
+	async setInfo(token, loggedIn){
+		try{
+			await AsyncStorage.setItem('token', token)
+			await AsyncStorage.setItem('loggedIn', loggedIn)
+		}catch (error){
+			console.log(error.message)
 		}
 	}
 		

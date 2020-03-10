@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
+import { Text, View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Button, AsyncStorage } from 'react-native';
+
+
+
 class homeScreen extends Component {
     constructor(props) {
         super(props);
 		this.state = {
 		  isLoading: true,
-		  chitsData: [],
-		  loggedIn :false,
-		  token: ''
-		  
+		  chitsData: []
 	   }
     }
     render() {
+		
 		if(this.state.isLoading){
 			return(
 				<View>
@@ -19,6 +20,14 @@ class homeScreen extends Component {
 				</View>
 			)
 		}
+		
+		if (this.getData('loggedIn') == 'true'){
+			console.log("logged in is true")
+		}
+		else{
+			console.log("logged in is not true")
+		}
+		
         return (
             <View style={styles.container}>
                 <View style={styles.headerBar}>
@@ -32,6 +41,7 @@ class homeScreen extends Component {
 					<View>
 						<Button
 							title="Search"
+							onPress={ () => this.getData('token') }
 						/>
 					</View>
 					
@@ -62,6 +72,17 @@ class homeScreen extends Component {
 
         );
     }
+	
+	async getData(key){
+		let Data = '';
+		try{
+			const retrievedToken = await AsyncStorage.getItem(key) || 'none';
+			
+			console.log(retrievedToken)
+		} catch(error){
+			console.log(error.message);
+		}
+	}
 	
 	getChits(){
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits')
@@ -141,11 +162,3 @@ const styles = StyleSheet.create({
 
 });
 export default homeScreen;
-
-/* <View style={styles.userPhoto}/>
-					
-					<Text style={styles.chittrHeaderText}>Chittr</Text>	
-					
-					<TouchableOpacity onPress={() => this.props.navigation.navigate('login')}>
-						<View stlye={styles.userPhoto}/>
-					</TouchableOpacity> */
