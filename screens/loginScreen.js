@@ -5,18 +5,21 @@ class loginScreen extends Component{
         super(props);
 		this.state={
 			email:'',
-			password:''
+			password:'',
+			token: ''
 		};
 		//emailFromSignUp = this.props.navigation.getParam(email, '')
 		
     }
 	
 	login(){
-		/* Alert.alert(
-			this.state.email,
-			this.state.password,
-			[{text: 'OK', onPress: () => console.log('OK Pressed')}]
-		) */
+		
+		const handleResponse = res => {
+			if(res.status){
+				return res.json()
+			}
+			throw new Error("fucking error")
+		}
 		
 		return fetch("http://10.0.2.2:3333/api/v0.0.5/login",
 		{
@@ -29,25 +32,40 @@ class loginScreen extends Component{
 				password: this.state.password
 			})
 		})
-
-		.then((response) => {
+		
+		
+		//.then((response) => response.json())
+			/* .then((response) => {
+				console.log(response)
+			}) */
+		
+		.then((response) => {handleResponse()})
+		
+		.then((responseJson) => {
+			console.log(responseJson)
+		})
+		
+		
+		
+		/* .then((response) => {
+			console.log("response: ", response)
+			console.log("response status:", response.status)
 			if (response.status == 400){
 				Alert.alert("Couldn't find Account Matching these Details", "Please check email and password are correct")
 			}
 			else if(response.status == 200){
-				.then(response => response.json())
-				.then((response.Json) => {
-					Alert.alert(responseJson);
-				}) 
+				//response = response.json()
+				responseJson = response.json()
+				console.log(responseJson)
 				this.props.navigation.navigate('home')
 			}
 			else {
 				Alert.alert("Unable to login, please try again later1")
 			}
 			
-		})
+		}) */
 		.catch((error) => {
-			Alert.alert("Unable to login" ,"please try again later2")
+			Alert.alert("Error" ,error.message)
 		});
 	}
 
@@ -74,7 +92,7 @@ class loginScreen extends Component{
 					
 					<View style={styles.buttonContainer}>
 						<Button
-						color='palevioletred'
+							color='palevioletred'
 							onPress={() => this.login()}
 							title="Login"
 						/>
