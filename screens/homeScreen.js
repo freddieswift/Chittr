@@ -6,7 +6,9 @@ class homeScreen extends Component {
 		this.state = {
 		  isLoading: true,
 		  chitsData: [],
-		  loggedIn :false
+		  loggedIn :false,
+		  token: ''
+		  
 	   }
     }
     render() {

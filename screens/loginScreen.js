@@ -8,66 +8,44 @@ class loginScreen extends Component{
 			password:'',
 			token: ''
 		};
-		//emailFromSignUp = this.props.navigation.getParam(email, '')
-		
     }
 	
-	login(){
+	
 		
-		const handleResponse = res => {
-			if(res.status){
-				return res.json()
-			}
-			throw new Error("fucking error")
-		}
-		
-		return fetch("http://10.0.2.2:3333/api/v0.0.5/login",
-		{
-			method: 'POST',
-			headers:{
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				email: this.state.email,
-				password: this.state.password
-			})
-		})
-		
-		
-		//.then((response) => response.json())
-			/* .then((response) => {
-				console.log(response)
-			}) */
-		
-		.then((response) => {handleResponse()})
-		
-		.then((responseJson) => {
-			console.log(responseJson)
-		})
-		
-		
-		
-		/* .then((response) => {
-			console.log("response: ", response)
-			console.log("response status:", response.status)
-			if (response.status == 400){
+	async login(){
+		try{
+			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/login",
+			{
+				method: 'POST',
+				headers:{
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					email: this.state.email,
+					password: this.state.password
+				})
+			});
+			const status = await response.status;
+			
+			if (status == 400){
 				Alert.alert("Couldn't find Account Matching these Details", "Please check email and password are correct")
 			}
-			else if(response.status == 200){
-				//response = response.json()
-				responseJson = response.json()
-				console.log(responseJson)
+			else if(status == 200){
+				const json = await response.json();
+				//console.log("IT FUCKING WORKS", json.token)
+				this.setState({
+					token: json.token,
+				})
 				this.props.navigation.navigate('home')
 			}
 			else {
 				Alert.alert("Unable to login, please try again later1")
 			}
-			
-		}) */
-		.catch((error) => {
-			Alert.alert("Error" ,error.message)
-		});
+		} catch (error) {
+			console.log(error)
+		}
 	}
+		
 
 	render(){
 		return(
