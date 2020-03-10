@@ -5,7 +5,8 @@ class homeScreen extends Component {
         super(props);
 		this.state = {
 		  isLoading: true,
-		  chitsData: []
+		  chitsData: [],
+		  loggedIn :false
 	   }
     }
     render() {

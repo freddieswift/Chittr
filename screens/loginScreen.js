@@ -12,11 +12,43 @@ class loginScreen extends Component{
     }
 	
 	login(){
-		Alert.alert(
+		/* Alert.alert(
 			this.state.email,
 			this.state.password,
 			[{text: 'OK', onPress: () => console.log('OK Pressed')}]
-		)
+		) */
+		
+		return fetch("http://10.0.2.2:3333/api/v0.0.5/login",
+		{
+			method: 'POST',
+			headers:{
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				email: this.state.email,
+				password: this.state.password
+			})
+		})
+
+		.then((response) => {
+			if (response.status == 400){
+				Alert.alert("Couldn't find Account Matching these Details", "Please check email and password are correct")
+			}
+			else if(response.status == 200){
+				.then(response => response.json())
+				.then((response.Json) => {
+					Alert.alert(responseJson);
+				}) 
+				this.props.navigation.navigate('home')
+			}
+			else {
+				Alert.alert("Unable to login, please try again later1")
+			}
+			
+		})
+		.catch((error) => {
+			Alert.alert("Unable to login" ,"please try again later2")
+		});
 	}
 
 	render(){
@@ -50,17 +82,18 @@ class loginScreen extends Component{
 					<View style={styles.buttonContainer}>
 						<Button
 							color='palevioletred'
-							onPress={() => this.props.navigation.navigate('home')}
-							title="Back"
+							onPress={() => this.props.navigation.navigate('signUp')}
+							title="Sign Up"
 						/>
 					</View>
 					<View style={styles.buttonContainer}>
 						<Button
 							color='palevioletred'
-							onPress={() => this.props.navigation.navigate('signUp')}
-							title="Sign Up"
+							onPress={() => this.props.navigation.navigate('home')}
+							title="Back"
 						/>
 					</View>
+					
 				</View>	
 					
 			</View>
