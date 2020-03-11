@@ -8,11 +8,16 @@ class homeScreen extends Component {
         super(props);
 		this.state = {
 		  isLoading: true,
-		  chitsData: []
+		  chitsData: [],
+		  token: '',
+		  loggedIn: false
 	   }
     }
     render() {
 		
+		//console.log("start of render")
+		console.log("this.token1: ", this.token)
+		console.log("this.loggedIn1: ", this.loggedIn)
 		if(this.state.isLoading){
 			return(
 				<View>
@@ -20,13 +25,15 @@ class homeScreen extends Component {
 				</View>
 			)
 		}
+	
+		//console.log("reached this.getData(token)")
+		//this.getData('token')
+		//console.log("reached this.getData(loggedIn)")
+		//this.getData('loggedIn')
 		
-		if (this.getData('loggedIn') == 'true'){
-			console.log("logged in is true")
-		}
-		else{
-			console.log("logged in is not true")
-		}
+		
+		//console.log("this.token: ", this.token)
+		//console.log("this.loggedIn2: ", this.loggedIn)
 		
         return (
             <View style={styles.container}>
@@ -41,7 +48,7 @@ class homeScreen extends Component {
 					<View>
 						<Button
 							title="Search"
-							onPress={ () => this.getData('token') }
+							onPress={ () => {this.setState({token: this.getData('token')}); }}
 						/>
 					</View>
 					
@@ -74,11 +81,17 @@ class homeScreen extends Component {
     }
 	
 	async getData(key){
-		let Data = '';
+		//console.log("inside getData", key)
 		try{
 			const retrievedToken = await AsyncStorage.getItem(key) || 'none';
-			
-			console.log(retrievedToken)
+			//console.log("rt", retrievedToken)
+			if (key == 'token'){
+				//console.log("setting token inside getData")
+				this.token = retrievedToken
+			}else if (key == 'loggedIn'){
+				//console.log("setting loggedIn inside getData")
+				this.loggedIn = true
+			}
 		} catch(error){
 			console.log(error.message);
 		}

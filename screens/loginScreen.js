@@ -37,7 +37,7 @@ class loginScreen extends Component{
 					
 					loggedIn: true
 				}) */
-				this.setInfo(json.token, 'true22')
+				this.setInfo(json.token, 'true')
 				this.props.navigation.navigate('home')
 			}
 			else {
@@ -50,6 +50,7 @@ class loginScreen extends Component{
 	
 	async setInfo(token, loggedIn){
 		try{
+			//console.log("setting token and logged in, setInfo()")
 			await AsyncStorage.setItem('token', token)
 			await AsyncStorage.setItem('loggedIn', loggedIn)
 		}catch (error){
