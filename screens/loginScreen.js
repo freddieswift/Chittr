@@ -69,7 +69,7 @@ class loginScreen extends Component{
 				// get token  from response
 				const json = await response.json();
 				this.storeToken(json.token)
-				this.props.navigation.push('home')
+				this.props.navigation.goBack()
 			}
 			
 			
@@ -83,33 +83,7 @@ class loginScreen extends Component{
 			console.log(error)
 		}
 	}
-	
-	/* async setInfo(token, loggedIn){
-		try{
-			//console.log("setting token and logged in, setInfo()")
-			await AsyncStorage.setItem('token', token)
-			await AsyncStorage.setItem('loggedIn', loggedIn)
-		}catch (error){
-			console.log(error.message)
-		}
-	} */
-		
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -151,7 +125,7 @@ class loginScreen extends Component{
 					<View style={styles.buttonContainer}>
 						<Button
 							color='palevioletred'
-							onPress={() => this.props.navigation.navigate('home')}
+							onPress={() => this.props.navigation.goBack()}
 							title="Back"
 						/>
 					</View>

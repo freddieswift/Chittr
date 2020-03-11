@@ -15,11 +15,6 @@ class homeScreen extends Component {
 	   
     } 
 	
-	
-	/* componentWillMount(){
-		this.getToken();
-	} */
-	
 	componentDidMount(){
 		this.getChits();
 		this.getToken();
@@ -42,7 +37,6 @@ class homeScreen extends Component {
 			})
 			.catch((error) => {console.log(error);});
 	}
-	
 	
 	async getToken(){
 		try{
@@ -75,10 +69,7 @@ class homeScreen extends Component {
 		this.deleteToken();
 	}
 	
-	
     render() {
-		
-		 
 		
 		const loggedIn = this.state.loggedIn;
 		
@@ -115,11 +106,9 @@ class homeScreen extends Component {
 					<View>
 						<Button
 							title="Search"
-							onPress={ () => {this.setState({token: this.getToken('token')}); }}
+							onPress={ () => this.props.navigation.navigate('search')}
 						/>
 					</View>
-					
-					
 					
 				</View>
 				<View style = {styles.chittList}>
@@ -141,17 +130,8 @@ class homeScreen extends Component {
 					/>
 				</View>
             </View>
-                
-            
-
         );
-    }
-	
-	
-	
-	
-	
-	
+    }	
 }
 const styles = StyleSheet.create({
 	//holds the whole page
