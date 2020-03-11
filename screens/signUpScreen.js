@@ -92,6 +92,14 @@ class signUpScreen extends Component{
 							title="Sign Up"
 						/>
 					</View>
+					
+					<View style={styles.buttonContainer}>
+						<Button
+							color='palevioletred'
+							onPress={() => this.props.navigation.navigate('login')}
+							title="Back"
+						/>
+					</View>
 				</View>	
 					
 			</View>

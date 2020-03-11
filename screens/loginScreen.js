@@ -1,15 +1,43 @@
 import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
+
+const _TOKEN = 'token';
+
 class loginScreen extends Component{
+	
+	
 	constructor(props) {
         super(props);
 		this.state={
 			email:'',
 			password:'',
-			token: '',
-			loggedIn: false
 		};
     }
+	
+	
+	
+	async storeToken(token){
+		try{
+			await AsyncStorage.setItem(_TOKEN, token);
+			this.getToken();
+		}
+		catch(error){
+			console.log("something went wrong", error.Message)
+		}
+	}
+	
+	
+	
+	async getToken(){
+		try{
+			let token = await AsyncStorage.getItem(_TOKEN)
+			console.log("token is:", token)
+		}
+		catch(error){
+			console.log("something went wrong", error.Message)
+		}
+	}
+	
 	
 	
 		
@@ -26,29 +54,37 @@ class loginScreen extends Component{
 					password: this.state.password
 				})
 			});
+			
 			const status = await response.status;
 			
+			
+			//check if response status is ok before proceeding
 			if (status == 400){
 				Alert.alert("Couldn't find Account Matching these Details", "Please check email and password are correct")
 			}
+			
+			
+			
 			else if(status == 200){
+				// get token  from response
 				const json = await response.json();
-				/* this.setState({
-					
-					loggedIn: true
-				}) */
-				this.setInfo(json.token, 'true')
-				this.props.navigation.navigate('home')
+				this.storeToken(json.token)
+				this.props.navigation.push('home')
 			}
+			
+			
 			else {
 				Alert.alert("Unable to login, please try again later1")
 			}
+			
+			
+			
 		} catch (error) {
 			console.log(error)
 		}
 	}
 	
-	async setInfo(token, loggedIn){
+	/* async setInfo(token, loggedIn){
 		try{
 			//console.log("setting token and logged in, setInfo()")
 			await AsyncStorage.setItem('token', token)
@@ -56,9 +92,27 @@ class loginScreen extends Component{
 		}catch (error){
 			console.log(error.message)
 		}
-	}
+	} */
 		
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	render(){
 		return(
 			<View style={styles.container}>
@@ -122,17 +176,24 @@ const styles = StyleSheet.create({
 	inputField: {
 		borderColor: 'gray',
 		borderWidth: 1,
-		margin: 5
+		margin: 5,
+		paddingLeft: 10,
+		fontSize: 20
 	},
 	
 	info: {
+		fontSize: 20,
 		marginLeft: 5,
-		padding: 5
+		padding: 5,
+		
 		
 	},
 	
 	infoContainer:{
-		flex: 8
+		flex: 8,
+		
+		justifyContent: 'center'
+		
 	},
 	
 	chittrHeaderText: {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Button, AsyncStorage } from 'react-native';
 
-
+const _TOKEN = 'token';
 
 class homeScreen extends Component {
     constructor(props) {
@@ -12,12 +12,91 @@ class homeScreen extends Component {
 		  token: '',
 		  loggedIn: false
 	   }
-    }
+	   
+    } 
+	
+	
+	/* componentWillMount(){
+		this.getToken();
+	} */
+	
+	componentDidMount(){
+		this.getChits();
+		this.getToken();
+		
+		const {navigation} = this.props;
+		navigation.addListener ('willFocus', () => {
+			this.getToken();
+		});
+	}
+	
+	
+	getChits(){
+		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits')
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({
+					isLoading: false,
+					chitsData: responseJson,
+				});
+			})
+			.catch((error) => {console.log(error);});
+	}
+	
+	
+	async getToken(){
+		try{
+			let token = await AsyncStorage.getItem(_TOKEN)
+			console.log("token is:", token)
+			if(token){
+				this.setState({loggedIn: true});
+			}
+			else{
+				this.setState({loggedIn: false});
+			}
+		}
+		catch(error){
+			console.log(error.message)
+		}
+	}
+	
+	async deleteToken(){
+		try{
+			await AsyncStorage.removeItem(_TOKEN)
+			//to make button change back to login
+			this.setState({loggedIn: false});
+		}
+		catch(error){
+			console.log(error.message)
+		}
+	}
+	
+	logout(){
+		this.deleteToken();
+	}
+	
+	
     render() {
 		
-		//console.log("start of render")
-		console.log("this.token1: ", this.token)
-		console.log("this.loggedIn1: ", this.loggedIn)
+		 
+		
+		const loggedIn = this.state.loggedIn;
+		
+		let loginLogoutButton;
+		
+		if (loggedIn){
+			loginLogoutButton = <Button
+				onPress={() => this.logout()}
+				title="Logout">
+			</Button>
+		}
+		else{
+			loginLogoutButton = <Button
+				onPress={() => this.props.navigation.navigate('login')}
+				title="Login">
+			</Button>
+		}
+		
 		if(this.state.isLoading){
 			return(
 				<View>
@@ -25,30 +104,18 @@ class homeScreen extends Component {
 				</View>
 			)
 		}
-	
-		//console.log("reached this.getData(token)")
-		//this.getData('token')
-		//console.log("reached this.getData(loggedIn)")
-		//this.getData('loggedIn')
-		
-		
-		//console.log("this.token: ", this.token)
-		//console.log("this.loggedIn2: ", this.loggedIn)
 		
         return (
             <View style={styles.container}>
                 <View style={styles.headerBar}>
 					<View>
-						<Button
-							onPress={() => this.props.navigation.navigate('login')}
-							title="Login"
-						/>
+						{loginLogoutButton}
 					</View>
 					<Text style={styles.chittrHeaderText}>Chittr</Text>	
 					<View>
 						<Button
 							title="Search"
-							onPress={ () => {this.setState({token: this.getData('token')}); }}
+							onPress={ () => {this.setState({token: this.getToken('token')}); }}
 						/>
 					</View>
 					
@@ -80,38 +147,11 @@ class homeScreen extends Component {
         );
     }
 	
-	async getData(key){
-		//console.log("inside getData", key)
-		try{
-			const retrievedToken = await AsyncStorage.getItem(key) || 'none';
-			//console.log("rt", retrievedToken)
-			if (key == 'token'){
-				//console.log("setting token inside getData")
-				this.token = retrievedToken
-			}else if (key == 'loggedIn'){
-				//console.log("setting loggedIn inside getData")
-				this.loggedIn = true
-			}
-		} catch(error){
-			console.log(error.message);
-		}
-	}
 	
-	getChits(){
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits')
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({
-					isLoading: false,
-					chitsData: responseJson,
-				});
-			})
-			.catch((error) => {console.log(error);});
-	}
 	
-	componentDidMount(){
-		this.getChits();
-	}
+	
+	
+	
 }
 const styles = StyleSheet.create({
 	//holds the whole page
