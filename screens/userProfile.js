@@ -20,11 +20,7 @@ class userProfile extends Component{
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
 			.then((response) => response.json())
 			.then((responseJson) => {
-				console.log("rj", responseJson)
 				this.state.userDetails = responseJson
-				
-				console.log("ud", this.state.userDetails)
-				console.log("famname",this.state.userDetails.family_name)
 				this.setState({
 					refresh: !this.state.refresh
 				})
@@ -34,7 +30,8 @@ class userProfile extends Component{
 	
 	render(){
 		
-		console.log("render fam name", this.state.userDetails.family_name)
+		const userDetails = this.state.userDetails;
+		console.log("render userdetails", userDetails)
 		return(
 			<View style = {styles.container}>
 				<View style={styles.headerBar}>
@@ -51,8 +48,23 @@ class userProfile extends Component{
 					<View style={styles.userInfoContainer}>
 						<Text style = {styles.userInfoText}>{this.state.userDetails.given_name + " " + this.state.userDetails.family_name}</Text>
 					</View>
+					<View style={styles.followButtonContainer}>
+						<Button 
+							title="follow"
+							color='palevioletred'
+						/>
+					</View>
 					<View style={styles.chitList}>
-						
+						<FlatList
+							data={userDetails.recent_chits}
+							renderItem={({item}) => 
+								<View style = {styles.result}>
+									<Text style = {styles.chittText}>{item.chit_content}</Text>
+								</View>
+							}
+							//keyExtractor={({id}, index) => id}
+							keyExtractor={item=>item.id}
+						/> 
 					</View>
 				</View>
 			</View>
@@ -83,6 +95,10 @@ const styles = StyleSheet.create({
         fontSize: 30,
     },
 	
+	followButtonContainer:{
+		padding: 5,
+	},
+	
 	buttonContainer: {
 		padding: 5,
 	},
@@ -98,7 +114,7 @@ const styles = StyleSheet.create({
 	},
 	
 	userInfoContainer:{
-		flex: 1,
+		
 		backgroundColor: 'palevioletred',
 		alignItems: 'center',
 		margin: 3
@@ -111,7 +127,22 @@ const styles = StyleSheet.create({
 	userInfoText:{
 		fontSize: 30,
 		color: 'white',
-	}
+	},
+	
+	chittText:{
+		fontSize: 25,
+		paddingLeft: 5
+	},
+	
+	result: {
+		flexDirection: 'column',
+		alignItems: 'stretch',
+		margin: 5,
+		padding: 5,
+		borderColor: 'grey',
+		borderWidth: 1,
+		backgroundColor: 'white'
+	},
 	
 	
 });

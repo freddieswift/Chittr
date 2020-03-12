@@ -29,7 +29,7 @@ class searchScreen extends Component{
 	
 	render(){
 		
-		const result2 = this.state.result;
+		const result = this.state.result;
 		
 		return (
 			<View style={styles.container}>
@@ -57,7 +57,7 @@ class searchScreen extends Component{
 					</View>
 					<View style = {styles.resultList}>
 						<FlatList
-							data={result2}
+							data={result}
 							extraData={this.state.refresh}
 							renderItem={({item}) => 
 								<TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', {user_id: item.user_id})}>
