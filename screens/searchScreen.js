@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, TextInput, TouchableOpacity, Alert, AsyncStorage } from 'react-native';
 
 const _TOKEN = 'token';
 
@@ -60,11 +60,13 @@ class searchScreen extends Component{
 							data={result2}
 							extraData={this.state.refresh}
 							renderItem={({item}) => 
-								<View style={styles.result}>
-									<View >
-										<Text style = {styles.userInfoText}>{item.given_name + " " + item.family_name}</Text>
+								<TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', {user_id: item.user_id})}>
+									<View style={styles.result}>
+										<View >
+											<Text style = {styles.userInfoText}>{item.given_name + " " + item.family_name}</Text>
+										</View>
 									</View>
-								</View>
+								</TouchableOpacity>
 							}
 							//keyExtractor={({id}, index) => id}
 							keyExtractor={item=>item.id}

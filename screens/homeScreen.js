@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Button, AsyncStorage } from 'react-native';
+import { Text, View, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity, Button, AsyncStorage } from 'react-native';
 
 const _TOKEN = 'token';
 
@@ -43,6 +43,7 @@ class homeScreen extends Component {
 			let token = await AsyncStorage.getItem(_TOKEN)
 			console.log("token is:", token)
 			if(token){
+				this.setState({token: token})
 				this.setState({loggedIn: true});
 			}
 			else{
@@ -65,8 +66,37 @@ class homeScreen extends Component {
 		}
 	}
 	
-	logout(){
-		this.deleteToken();
+	async logout(){
+		try{
+			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/logout",
+			{
+				method: 'POST',
+				headers:{
+					"Content-Type": "application/json",
+					"X-Authorization" : this.state.token
+				},
+			});
+			
+			const status = await response.status;
+			
+			if (status == 400){
+				Alert.alert('Unable To Logout','Please try again')
+			}
+			
+			else if (status == 200){
+				this.deleteToken();
+			}
+			
+			else {
+				Alert.alert("Unable to logout, please try again")
+			}
+		}
+		catch(error){
+			console.log(error)
+		}
+		
+		
+		
 	}
 	
     render() {
@@ -114,6 +144,7 @@ class homeScreen extends Component {
 				<View style = {styles.chittList}>
 					<FlatList
 						data={this.state.chitsData}
+						
 						renderItem={({item}) => 
 							<View style={styles.chitt}>
 								<View >
@@ -124,9 +155,9 @@ class homeScreen extends Component {
 								</View>
 								
 							</View>
-						}
-						//keyExtractor={({id}, index) => id}
-						keyExtractor={item=>item.id}
+						} 
+						keyExtractor={({id}, index) => id}
+						//keyExtractor={item=>item.id}
 					/>
 				</View>
             </View>
