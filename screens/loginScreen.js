@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
 const _TOKEN = 'token';
+const _ID = 'id';
 
 class loginScreen extends Component{
 	
@@ -16,26 +17,53 @@ class loginScreen extends Component{
 	
 	
 	
-	async storeToken(token){
-		try{
-			await AsyncStorage.setItem(_TOKEN, token);
-			this.getToken();
+	async storeData(data, key){
+		console.log("data", data)
+		console.log("key", key)
+		if(key == "token"){
+			try{
+				await AsyncStorage.setItem(_TOKEN, data);
+			}
+			catch(error){
+				console.log("something went wrong1", error.Message)
+			}
+			
 		}
-		catch(error){
-			console.log("something went wrong", error.Message)
+		else if(key == "test"){
+			try{
+				await AsyncStorage.setItem(_ID, data);
+			}
+			catch(error){
+				console.log("something went wrong2", error.Message)
+			}
 		}
+		
 	}
 	
 	
 	
-	async getToken(){
-		try{
-			let token = await AsyncStorage.getItem(_TOKEN)
-			console.log("token is:", token)
+	async getData(key){
+		
+		if(key == "token"){
+			try{
+				let token = await AsyncStorage.getItem(_TOKEN)
+				console.log("token is:", token)
+			}
+			catch(error){
+				console.log("something went wrong3", error.Message)
+			}
+			
 		}
-		catch(error){
-			console.log("something went wrong", error.Message)
+		else if (key == "user_id"){
+			try{
+				let token = await AsyncStorage.getItem("user_id")
+				console.log("id is:", token)
+			}
+			catch(error){
+				console.log("something went wrong4", error.Message)
+			}
 		}
+		
 	}
 	
 	
@@ -68,7 +96,8 @@ class loginScreen extends Component{
 			else if(status == 200){
 				// get token  from response
 				const json = await response.json();
-				this.storeToken(json.token)
+				this.storeData(json.token, _TOKEN)
+				this.storeData(json.id, "test")
 				this.props.navigation.goBack()
 			}
 			

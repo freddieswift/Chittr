@@ -7,16 +7,19 @@ class userProfile extends Component{
 	constructor(props) {
         super(props);
 		this.state={
-			userDetails: []
+			userDetails: [],
+			token:''
 		}
 			
     }
 	
 	componentDidMount(){
 		this.getUserDetails()
+		this.getToken()
 	}
 	
 	async getUserDetails(){
+		console.log(this.props.navigation.state.params.user_id)
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -26,6 +29,50 @@ class userProfile extends Component{
 				})
 			})
 			.catch((error) => {console.log(error);});
+	}
+	
+	async followUser(id){
+		try{
+			const token = this.state.token
+			console.log(token)
+			console.log("token:",this.state.token)
+			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/user/" + this.props.navigation.state.params.user_id + "/follow",
+			{
+				method: 'POST',
+				headers:{
+					"Content-Type": "application/json",
+					"X-Authorization": token
+				},
+			});
+			
+			const status = await response.status;
+			
+			if(status == 401){
+				Alert.alert("Please login to follow this user")
+			}
+			else if (status == 200){
+				Alert.alert("Successfully followed user")
+			}
+			else{
+				Alert.alert("Unable to follow user, please try again later")
+			}
+		}
+		catch(error){
+			console.log(error.message)
+		}
+	}
+	
+	async getToken(){
+		try{
+			let token = await AsyncStorage.getItem(_TOKEN)
+			console.log("token is:", token)
+			if(token){
+				this.setState({token: token})
+			}
+		}
+		catch(error){
+			console.log(error.message)
+		}
 	}
 	
 	render(){
@@ -48,10 +95,25 @@ class userProfile extends Component{
 					<View style={styles.userInfoContainer}>
 						<Text style = {styles.userInfoText}>{this.state.userDetails.given_name + " " + this.state.userDetails.family_name}</Text>
 					</View>
-					<View style={styles.followButtonContainer}>
+					<View style={styles.buttonContainer}>
 						<Button 
 							title="follow"
 							color='palevioletred'
+							onPress = {() => this.followUser(this.props.navigation.state.params.user_id)}
+						/>
+					</View>
+					<View style={styles.buttonContainer}>
+						<Button 
+							title="followers"
+							color='palevioletred'
+							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "followers", user_id: this.props.navigation.state.params.user_id})}
+						/>
+					</View>
+					<View style={styles.buttonContainer}>
+						<Button 
+							title="following"
+							color='palevioletred'
+							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "following", user_id: this.props.navigation.state.params.user_id})}
 						/>
 					</View>
 					<View style={styles.chitList}>
@@ -95,10 +157,6 @@ const styles = StyleSheet.create({
         fontSize: 30,
     },
 	
-	followButtonContainer:{
-		padding: 5,
-	},
-	
 	buttonContainer: {
 		padding: 5,
 	},
@@ -117,7 +175,7 @@ const styles = StyleSheet.create({
 		
 		backgroundColor: 'palevioletred',
 		alignItems: 'center',
-		margin: 3
+		margin: 5
 	},
 	
 	chitList:{

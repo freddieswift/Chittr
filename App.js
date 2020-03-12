@@ -7,6 +7,7 @@ import loginScreen from './screens/loginScreen';
 import signUpScreen from './screens/signUpScreen';
 import searchScreen from './screens/searchScreen';
 import userProfile from './screens/userProfile';
+import followersScreen from './screens/followersScreen';
 
 
 const AppStackNav = createStackNavigator({
@@ -15,7 +16,8 @@ const AppStackNav = createStackNavigator({
 	login: { screen: loginScreen, navigationOptions: {headerShown: false}},
 	signUp: { screen: signUpScreen, navigationOptions: {headerShown: false}},
 	search: { screen: searchScreen, navigationOptions: {headerShown: false}},
-	userProfile: { screen: userProfile, navigationOptions: {headerShown: false}}
+	userProfile: { screen: userProfile, navigationOptions: {headerShown: false}},
+	followers: { screen: followersScreen, navigationOptions: {headerShown: false}}
 });
 
 const AppContainer = createAppContainer(AppStackNav)
