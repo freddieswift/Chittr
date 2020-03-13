@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
 const _TOKEN = 'token';
-const _ID = 'id';
+const _ID = 'user_id';
 
 class loginScreen extends Component{
 	
@@ -15,34 +15,17 @@ class loginScreen extends Component{
 		};
     }
 	
-	
-	
-	async storeData(data, key){
-		console.log("data", data)
-		console.log("key", key)
-		if(key == "token"){
-			try{
-				await AsyncStorage.setItem(_TOKEN, data);
-			}
-			catch(error){
-				console.log("something went wrong1", error.Message)
-			}
-			
+	async storeData(id, token){
+		try{
+			await AsyncStorage.multiSet([[_TOKEN, token], [_ID, JSON.stringify(id)]]);
 		}
-		else if(key == "test"){
-			try{
-				await AsyncStorage.setItem(_ID, data);
-			}
-			catch(error){
-				console.log("something went wrong2", error.Message)
-			}
+		catch(error){
+			console.log("something went wrong", error.Message)
 		}
 		
 	}
 	
-	
-	
-	async getData(key){
+	/* async getData(key){
 		
 		if(key == "token"){
 			try{
@@ -64,7 +47,7 @@ class loginScreen extends Component{
 			}
 		}
 		
-	}
+	} */
 	
 	
 	
@@ -96,8 +79,7 @@ class loginScreen extends Component{
 			else if(status == 200){
 				// get token  from response
 				const json = await response.json();
-				this.storeData(json.token, _TOKEN)
-				this.storeData(json.id, "test")
+				this.storeData(json.id, json.token)
 				this.props.navigation.goBack()
 			}
 			

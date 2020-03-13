@@ -1,28 +1,68 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity, Button, AsyncStorage } from 'react-native';
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+
 
 const _TOKEN = 'token';
+const _ID = 'user_id';
 
 class homeScreen extends Component {
+	_isMounted = false;
+	_menu = null;
+	
+	setMenuRef = ref => {
+		this._menu = ref;
+	};
+	
+	hideMenu = () => {
+		this._menu.hide();
+	};
+	
+	showMenu = () => {
+		this._menu.show();
+	};
+	
+	logoutOption = () => {
+		this.logoutCall();
+		this._menu.hide();
+	};
+	
+	myAccount = () => {
+		this.props.navigation.navigate('userProfile', {user_id: this.state.id});
+		this._menu.hide();
+	}
+	
+	
+	
     constructor(props) {
         super(props);
 		this.state = {
 		  isLoading: true,
 		  chitsData: [],
 		  token: '',
-		  loggedIn: false
+		  loggedIn: false,
+		  id: ''
 	   }
+	   
+	   
 	   
     } 
 	
 	componentDidMount(){
+		this._isMounted = true;
 		this.getChits();
 		this.getToken();
+		this.getID();
 		
 		const {navigation} = this.props;
 		navigation.addListener ('willFocus', () => {
 			this.getToken();
+			this.getID();
 		});
+	}
+	
+	componentWillUnmount(){
+		this._isMounted = false;
 	}
 	
 	
@@ -30,34 +70,53 @@ class homeScreen extends Component {
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits')
 			.then((response) => response.json())
 			.then((responseJson) => {
-				this.setState({
+				if (this._isMounted){
+					this.setState({
 					isLoading: false,
 					chitsData: responseJson,
-				});
+					});
+				}
+				
 			})
 			.catch((error) => {console.log(error);});
 	}
 	
-	async getToken(){
-		try{
-			let token = await AsyncStorage.getItem(_TOKEN)
-			console.log("token is:", token)
-			if(token){
-				this.setState({token: token})
-				this.setState({loggedIn: true});
+	async getID(){
+		if (this._isMounted){
+			try{
+				let id = await AsyncStorage.getItem(_ID)
+				if(id){
+					this.setState({id: id})
+				}
 			}
-			else{
-				this.setState({loggedIn: false});
+			catch(error){
+				console.log(error.message)
 			}
-		}
-		catch(error){
-			console.log(error.message)
 		}
 	}
 	
-	async deleteToken(){
+	async getToken(){
+		if (this._isMounted){
+			try{
+				let token = await AsyncStorage.getItem(_TOKEN)
+				if(token){
+					this.setState({token: token})
+					this.setState({loggedIn: true});
+				}
+				else{
+					this.setState({loggedIn: false});
+				}
+			}
+			catch(error){
+				console.log(error.message)
+			}
+		}
+	}
+	
+	async deleteData(){
 		try{
 			await AsyncStorage.removeItem(_TOKEN)
+			await AsyncStorage.removeItem(_ID)
 			//to make button change back to login
 			this.setState({loggedIn: false});
 		}
@@ -66,7 +125,7 @@ class homeScreen extends Component {
 		}
 	}
 	
-	async logout(){
+	async logoutCall(){
 		try{
 			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/logout",
 			{
@@ -84,7 +143,7 @@ class homeScreen extends Component {
 			}
 			
 			else if (status == 200){
-				this.deleteToken();
+				this.deleteData();
 			}
 			
 			else {
@@ -103,16 +162,23 @@ class homeScreen extends Component {
 		
 		const loggedIn = this.state.loggedIn;
 		
-		let loginLogoutButton;
+		let loginOptionsButton;
 		
 		if (loggedIn){
-			loginLogoutButton = <Button
-				onPress={() => this.logout()}
-				title="Logout">
-			</Button>
+			
+			loginOptionsButton = 
+			<View>
+				<Menu
+					ref={this.setMenuRef}
+					button ={<Button title="Options" onPress={this.showMenu}></Button>}
+				>
+					<MenuItem onPress={this.logoutOption}>Log Out</MenuItem>
+					<MenuItem onPress={this.myAccount}>My Account</MenuItem>
+				</Menu>
+			</View>
 		}
 		else{
-			loginLogoutButton = <Button
+			loginOptionsButton = <Button
 				onPress={() => this.props.navigation.navigate('login')}
 				title="Login">
 			</Button>
@@ -130,7 +196,7 @@ class homeScreen extends Component {
             <View style={styles.container}>
                 <View style={styles.headerBar}>
 					<View>
-						{loginLogoutButton}
+						{loginOptionsButton}
 					</View>
 					<Text style={styles.chittrHeaderText}>Chittr</Text>	
 					<View>
@@ -171,6 +237,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'stretch'
     },
+	
+	menuButton: {
+		backgroundColor: 'blue'
+	},
 	
 	
 	//the whole chit
