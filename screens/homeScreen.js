@@ -129,6 +129,35 @@ class homeScreen extends Component {
 		}
 	}
 	
+	async postChitt(){
+		try{
+			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/chits",
+			{
+				method: 'POST',
+				headers:{
+					"Content-Type": "application/json",
+					"X-Authorization" : this.state.token
+				},
+				body: JSON.stringify({
+					chit_id: 0,
+					timestamp: 0,
+					chit_content: this.state.chitt,
+					location: {longitude: 0, latitude: 0},
+					user: {
+						email: this.state.email,
+						password: this.state.password
+					}
+					
+				})
+			});
+			
+			
+		}
+		catch(error){
+			console.log(error.message)
+		}
+	}
+	
 	async logoutCall(){
 		try{
 			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/logout",
@@ -178,15 +207,15 @@ class homeScreen extends Component {
 				</TouchableOpacity>
 			
 			loginOptionsButton = 
-			<View>
-				<Menu
-					ref={this.setMenuRef}
-					button ={<Button title="Options" onPress={this.showMenu}></Button>}
-				>
-					<MenuItem onPress={this.logoutOption}>Log Out</MenuItem>
-					<MenuItem onPress={this.myAccount}>My Account</MenuItem>
-				</Menu>
-			</View>
+				<View>
+					<Menu
+						ref={this.setMenuRef}
+						button ={<Button title="Options" onPress={this.showMenu}></Button>}
+					>
+						<MenuItem onPress={this.logoutOption}>Log Out</MenuItem>
+						<MenuItem onPress={this.myAccount}>My Account</MenuItem>
+					</Menu>
+				</View>
 		}
 		else{
 			loginOptionsButton = <Button
@@ -212,7 +241,7 @@ class homeScreen extends Component {
 							<View style={styles.inputField}>
 								<TextInput
 									numberOfLines={3}
-									//onChangeText={(query) => this.setState({query})}
+									onChangeText={(chitt) => this.setState({chitt})}
 									placeholder='Type Something Creative...'
 									maxLength= {141}
 									multiline={true}
@@ -222,7 +251,7 @@ class homeScreen extends Component {
 							<View style={styles.button}>
 								<Button style={styles.button}
 									title="Post"
-									onPress={ () => {this.setState({modalOpen: false})}}
+									onPress={ () => this.postChitt()}
 								/>
 							</View>
 							

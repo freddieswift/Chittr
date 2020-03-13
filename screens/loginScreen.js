@@ -80,6 +80,7 @@ class loginScreen extends Component{
 				// get token  from response
 				const json = await response.json();
 				this.storeData(json.id, json.token)
+				console.log(json.token)
 				this.props.navigation.goBack()
 			}
 			
