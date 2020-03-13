@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
+import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
 class followersScreen extends Component{
 	constructor(props){
@@ -44,9 +44,11 @@ class followersScreen extends Component{
 					<FlatList
 						data={list}
 						renderItem={({item}) => 
+							//<TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', {user_id: item.user_id})}>
 							<View style = {styles.result}>
 								<Text style = {styles.resultText}>{item.given_name + " " + item.family_name}</Text>
 							</View>
+							//</TouchableOpacity>
 						}
 						keyExtractor={item=>item.id}
 					/> 

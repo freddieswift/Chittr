@@ -12,7 +12,8 @@ class userProfile extends Component{
 			userDetails: [],
 			token:'',
 			id: '',
-			followingList: []
+			followingList: [],
+			following: false
 		}
 			
     }
@@ -25,19 +26,32 @@ class userProfile extends Component{
 	
 	//gets the list of followers for the currently logged in user
 	async getFollowingList(){
-		console.log("this.state.id",this.state.id)
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.state.id + "/following")
 			.then((response) => response.json())
 			.then((responseJson) => {
-				console.log("reponseJson", responseJson)
 				this.state.followingList = responseJson
-				//this.checkIfFollowing()
+				const followingBool = this.checkIfFollowing()
+				console.log("following bool", followingBool)
+				if(followingBool == true){
+					//this.state.following = true;
+					this.setState({
+						following: true
+					})
+				}
+				else{
+					this.setState({
+						following: false
+					})
+					//this.state.following = false;
+				}
+				this.setState({
+					refresh: !this.state.refresh
+				})
 			})
 			.catch((error) => {console.log("getfollowing list",error);})
 	}
 	
 	async getUserDetails(){
-		console.log("user id", this.props.navigation.state.params.user_id)
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -49,22 +63,43 @@ class userProfile extends Component{
 			.catch((error) => {console.log(error);});
 	}
 	
-	/* checkIfFollowing(){
-		
-		console.log("followingList",this.state.followingList)
-		
-		
-		
-		//var followingListObj = JSON.parse(this.state.followingList)
-		for (var user in this.state.followingList){
-			console.log(user.user_id)
-			if (user.user_id == this.props.navigation.state.params.user_id){
-				console.log("following")
-				//return true;
+	async unFollowUser(id){
+		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/follow",
+			{
+				method:'delete',
+				headers:{
+					"Content-Type": "application/json",
+					"X-Authorization": this.state.token
+				},
+			}
+		)
+		.then((response) => {
+			const status = response.status
+			console.log("status", status)
+			if (status == 200){
+				Alert.alert("Successfully unfollowed user")
+			}
+			else if (status == 401){
+				Alert.alert("Unable to Unfollow User")
+			}
+			else if (status == 404){
+				Alert.alert("Unable to Unfollow User")
+			}
+			this.getFollowingList()
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+	}
+	
+	checkIfFollowing(){
+		for (var i in this.state.followingList){
+			if (this.state.followingList[i].user_id == this.props.navigation.state.params.user_id){
+				return true;
 			}
 		}
-		console.log("not following")
-	} */
+		return false;
+	}
 	
 	async followUser(id){
 		try{
@@ -89,6 +124,8 @@ class userProfile extends Component{
 			else{
 				Alert.alert("Unable to follow user, please try again later")
 			}
+			this.getFollowingList()
+			
 		}
 		catch(error){
 			console.log(error.message)
@@ -99,8 +136,6 @@ class userProfile extends Component{
 		try{
 			let token = await AsyncStorage.getItem(_TOKEN)
 			let id = await AsyncStorage.getItem(_ID)
-			console.log("token is:", token)
-			console.log("id is:", id)
 			if(token){
 				this.setState({token: token})
 			}
@@ -116,17 +151,17 @@ class userProfile extends Component{
 	
 	render(){
 		
-		//this.checkIfFollowing()
-		
 		// check to see if the profile that is being loaded is the one for the logged in user
 		// if it is not then display the option to follow the user displayed
 		// should not be able to follow yourself
 		// however this is allowed by the server
 		
 		let followButton;
-		
+		console.log("following",this.state.following)
 		if (this.state.id != this.props.navigation.state.params.user_id){
-			followButton = 
+			
+			if (this.state.following == false){
+				followButton = 
 				<View style={styles.buttonContainer}>
 					<Button 
 						title="follow"
@@ -134,6 +169,18 @@ class userProfile extends Component{
 						onPress = {() => this.followUser(this.props.navigation.state.params.user_id)}
 					/>
 				</View>
+			}
+			else {
+				followButton = 
+				<View style={styles.buttonContainer}>
+					<Button 
+						title="unfollow"
+						color='palevioletred'
+						onPress = {() => this.unFollowUser(this.props.navigation.state.params.user_id)}
+					/>
+				</View>
+			}
+			
 			
 		}
 		
