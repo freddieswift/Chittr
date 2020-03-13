@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity, Button, AsyncStorage } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, Alert, TouchableOpacity, Button, AsyncStorage } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+
 
 
 const _TOKEN = 'token';
@@ -41,7 +42,10 @@ class homeScreen extends Component {
 		  chitsData: [],
 		  token: '',
 		  loggedIn: false,
-		  id: ''
+		  id: '',
+		  modalOpen: false,
+		  setModalOpen: false,
+		  chitt: ''
 	   }
 	   
 	   
@@ -164,7 +168,14 @@ class homeScreen extends Component {
 		
 		let loginOptionsButton;
 		
+		let fab;
+		
 		if (loggedIn){
+			
+			fab = 
+				<TouchableOpacity style={styles.fab} onPress={() => this.setState({modalOpen: true})}>
+					<Text style={styles.fabText}>+</Text>
+				</TouchableOpacity>
 			
 			loginOptionsButton = 
 			<View>
@@ -194,6 +205,40 @@ class homeScreen extends Component {
 		
         return (
             <View style={styles.container}>
+			
+				<Modal visible={this.state.modalOpen} animationType='slide' transparent={true}>
+					<View style={styles.modal}>
+						<View style={styles.modalContent}>
+							<View style={styles.inputField}>
+								<TextInput
+									numberOfLines={3}
+									//onChangeText={(query) => this.setState({query})}
+									placeholder='Type Something Creative...'
+									maxLength= {141}
+									multiline={true}
+									fontSize= {20}
+								/>
+							</View>
+							<View style={styles.button}>
+								<Button style={styles.button}
+									title="Post"
+									onPress={ () => {this.setState({modalOpen: false})}}
+								/>
+							</View>
+							
+							<View style={styles.button}>
+								<Button
+									title="Back"
+									onPress={ () => {this.setState({modalOpen: false})}}
+								/>
+							</View>	
+							
+						
+						</View>
+					</View>
+				</Modal>
+				
+				
                 <View style={styles.headerBar}>
 					<View>
 						{loginOptionsButton}
@@ -210,7 +255,7 @@ class homeScreen extends Component {
 				<View style = {styles.chittList}>
 					<FlatList
 						data={this.state.chitsData}
-						
+						showsVerticalScrollIndicator={false}
 						renderItem={({item}) => 
 							<View style={styles.chitt}>
 								<View >
@@ -226,6 +271,11 @@ class homeScreen extends Component {
 						//keyExtractor={item=>item.id}
 					/>
 				</View>
+				
+				
+				
+				
+				{fab}
             </View>
         );
     }	
@@ -242,6 +292,35 @@ const styles = StyleSheet.create({
 		backgroundColor: 'blue'
 	},
 	
+	modal:{
+		flex: 1,
+		justifyContent: 'center'
+	},
+	
+	inputField: {
+		//TO FIX: STOP TEXT INPUT MOVING UPWARDS WHEN TYPING
+		justifyContent: 'flex-start',
+		borderColor: 'gray',
+		borderWidth: 1,
+		margin: 5,
+		paddingLeft: 10,
+		borderRadius: 10,
+		height: 150
+	},
+	
+	button:{
+		margin: 5
+	},
+	
+	modalContent:{
+		
+		backgroundColor: 'white',
+		padding: 10,
+		margin: 30,
+		borderColor: 'grey',
+		borderWidth: 1,
+		borderRadius: 10,
+	},
 	
 	//the whole chit
 	chitt: {
@@ -251,7 +330,8 @@ const styles = StyleSheet.create({
 		padding: 5,
 		borderColor: 'grey',
 		borderWidth: 1,
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		borderRadius: 10,
 	},
 	
 	// flatlist to hold chitts
@@ -279,6 +359,24 @@ const styles = StyleSheet.create({
 	userInfoText: {
 		fontSize: 15,
 		paddingLeft: 5
+	},
+	
+	fab:{
+		width: 60,
+		height: 60,
+		backgroundColor: 'palevioletred',
+		position: 'absolute',
+		bottom: 15,
+		right: 15,
+		borderRadius: 30,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	
+	fabText: {
+		fontSize: 40,
+		color: 'white',
+		marginBottom: 5
 	},
 	
 	//chit content text

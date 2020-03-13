@@ -177,8 +177,6 @@ const styles = StyleSheet.create({
 	infoContainer:{
 		flex: 8,
 		
-		justifyContent: 'center'
-		
 	},
 	
 	chittrHeaderText: {
