@@ -11,7 +11,8 @@ class userProfile extends Component{
 		this.state={
 			userDetails: [],
 			token:'',
-			id: ''
+			id: '',
+			followingList: []
 		}
 			
     }
@@ -21,8 +22,22 @@ class userProfile extends Component{
 		this.getData()
 	}
 	
+	
+	//gets the list of followers for the currently logged in user
+	async getFollowingList(){
+		console.log("this.state.id",this.state.id)
+		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.state.id + "/following")
+			.then((response) => response.json())
+			.then((responseJson) => {
+				console.log("reponseJson", responseJson)
+				this.state.followingList = responseJson
+				//this.checkIfFollowing()
+			})
+			.catch((error) => {console.log("getfollowing list",error);})
+	}
+	
 	async getUserDetails(){
-		console.log(this.props.navigation.state.params.user_id)
+		console.log("user id", this.props.navigation.state.params.user_id)
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -33,6 +48,23 @@ class userProfile extends Component{
 			})
 			.catch((error) => {console.log(error);});
 	}
+	
+	/* checkIfFollowing(){
+		
+		console.log("followingList",this.state.followingList)
+		
+		
+		
+		//var followingListObj = JSON.parse(this.state.followingList)
+		for (var user in this.state.followingList){
+			console.log(user.user_id)
+			if (user.user_id == this.props.navigation.state.params.user_id){
+				console.log("following")
+				//return true;
+			}
+		}
+		console.log("not following")
+	} */
 	
 	async followUser(id){
 		try{
@@ -75,6 +107,7 @@ class userProfile extends Component{
 			if(id){
 				this.setState({id: id})
 			}
+			this.getFollowingList()
 		}
 		catch(error){
 			console.log(error.message)
@@ -82,6 +115,8 @@ class userProfile extends Component{
 	}
 	
 	render(){
+		
+		//this.checkIfFollowing()
 		
 		// check to see if the profile that is being loaded is the one for the logged in user
 		// if it is not then display the option to follow the user displayed
