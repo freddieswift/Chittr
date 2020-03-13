@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
 const _TOKEN = 'token';
-const _ID = 'user_id';
+const _ID = 'id';
 
 class loginScreen extends Component{
 	

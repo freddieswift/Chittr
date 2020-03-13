@@ -2,20 +2,23 @@ import React, { Component } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
 const _TOKEN = 'token';
+const _ID = 'id';
+
 
 class userProfile extends Component{
 	constructor(props) {
         super(props);
 		this.state={
 			userDetails: [],
-			token:''
+			token:'',
+			id: ''
 		}
 			
     }
 	
 	componentDidMount(){
 		this.getUserDetails()
-		this.getToken()
+		this.getData()
 	}
 	
 	async getUserDetails(){
@@ -34,8 +37,6 @@ class userProfile extends Component{
 	async followUser(id){
 		try{
 			const token = this.state.token
-			console.log(token)
-			console.log("token:",this.state.token)
 			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/user/" + this.props.navigation.state.params.user_id + "/follow",
 			{
 				method: 'POST',
@@ -62,12 +63,17 @@ class userProfile extends Component{
 		}
 	}
 	
-	async getToken(){
+	async getData(){
 		try{
 			let token = await AsyncStorage.getItem(_TOKEN)
+			let id = await AsyncStorage.getItem(_ID)
 			console.log("token is:", token)
+			console.log("id is:", id)
 			if(token){
 				this.setState({token: token})
+			}
+			if(id){
+				this.setState({id: id})
 			}
 		}
 		catch(error){
@@ -77,8 +83,26 @@ class userProfile extends Component{
 	
 	render(){
 		
+		// check to see if the profile that is being loaded is the one for the logged in user
+		// if it is not then display the option to follow the user displayed
+		// should not be able to follow yourself
+		// however this is allowed by the server
+		
+		let followButton;
+		
+		if (this.state.id != this.props.navigation.state.params.user_id){
+			followButton = 
+				<View style={styles.buttonContainer}>
+					<Button 
+						title="follow"
+						color='palevioletred'
+						onPress = {() => this.followUser(this.props.navigation.state.params.user_id)}
+					/>
+				</View>
+			
+		}
+		
 		const userDetails = this.state.userDetails;
-		console.log("render userdetails", userDetails)
 		return(
 			<View style = {styles.container}>
 				<View style={styles.headerBar}>
@@ -95,13 +119,7 @@ class userProfile extends Component{
 					<View style={styles.userInfoContainer}>
 						<Text style = {styles.userInfoText}>{this.state.userDetails.given_name + " " + this.state.userDetails.family_name}</Text>
 					</View>
-					<View style={styles.buttonContainer}>
-						<Button 
-							title="follow"
-							color='palevioletred'
-							onPress = {() => this.followUser(this.props.navigation.state.params.user_id)}
-						/>
-					</View>
+					{followButton}
 					<View style={styles.buttonContainer}>
 						<Button 
 							title="followers"

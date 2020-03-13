@@ -4,7 +4,7 @@ import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 
 const _TOKEN = 'token';
-const _ID = 'user_id';
+const _ID = 'id';
 
 class homeScreen extends Component {
 	_isMounted = false;
