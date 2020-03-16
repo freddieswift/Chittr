@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, Alert, TouchableOpacity, Button, AsyncStorage } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, Alert, TouchableOpacity, Button, AsyncStorage, PermissionsAndroid } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
-
+import Geolocation from 'react-native-geolocation-service';
 
 
 const _TOKEN = 'token';
@@ -47,7 +47,9 @@ class homeScreen extends Component {
 		  id: '',
 		  modalOpen: false,
 		  setModalOpen: false,
-		  chitt: ''
+		  chitt: '',
+		  location: null,
+		  locationPermission: false
 	   }
 	   
 	   
@@ -59,6 +61,8 @@ class homeScreen extends Component {
 		this.getChits();
 		this.getToken();
 		this.getID();
+		
+		this.findCoordinates();
 		
 		const {navigation} = this.props;
 		navigation.addListener ('willFocus', () => {
@@ -72,6 +76,56 @@ class homeScreen extends Component {
 		this._isMounted = false;
 	}
 	
+	findCoordinates() {
+		console.log("finding coords")
+		if(!this.state.locationPermission){
+			this.state.locationPermission = this.requestLocationPermission();
+		}
+		Geolocation.getCurrentPosition(
+			(position) => {
+				const location = JSON.stringify(position);
+				this.setState({location});
+			},
+			
+			(error) => {
+				Alert.alert(error.message)
+			},
+			
+			{
+				enableHighAccuracy: true,
+				timeout: 20000,
+				maximumAge: 1000
+			}
+			
+			
+		);
+	}
+	
+	async requestLocationPermission(){
+		try {
+			const granted = await PermissionsAndroid.request(
+				PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+				{
+					title: 'Chittr Location Permission',
+					message: 'This app requires access to your location.',
+					buttonNeutral: 'Ask Me Later',
+					buttonMegative: 'Cancel',
+					buttonPositive: 'OK',
+				},
+			);
+			if (granted === PermissionsAndroid.RESULTS.GRANTED){
+				console.log('You can access location');
+				return true;
+			}
+			else{
+				console.log('Location Permission Denied');
+				return false;
+			}
+		}
+		catch(error){
+			console.log(error.message);
+		}
+	}
 	
 	getChits(){
 		let headers;

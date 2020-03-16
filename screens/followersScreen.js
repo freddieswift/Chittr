@@ -14,6 +14,7 @@ class followersScreen extends Component{
 	}
 	
 	async getList(){
+		//this.props....user_id = the id of the user logged in
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/" + this.props.navigation.state.params.followingFollowers)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -44,11 +45,11 @@ class followersScreen extends Component{
 					<FlatList
 						data={list}
 						renderItem={({item}) => 
-							//<TouchableOpacity onPress={() => this.props.navigation.navigate('userProfile', {user_id: item.user_id})}>
-							<View style = {styles.result}>
-								<Text style = {styles.resultText}>{item.given_name + " " + item.family_name}</Text>
-							</View>
-							//</TouchableOpacity>
+							<TouchableOpacity onPress={() => this.props.navigation.push('userProfile', {user_id: item.user_id})}>
+								<View style = {styles.result}>
+									<Text style = {styles.resultText}>{item.given_name + " " + item.family_name}</Text>
+								</View>
+							</TouchableOpacity>
 						}
 						keyExtractor={item=>item.id}
 					/> 
