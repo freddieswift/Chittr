@@ -10,10 +10,15 @@ class followersScreen extends Component{
 	}
 	
 	componentDidMount(){
-		this.getList()
+		this.getList();
+		const {navigation} = this.props;
+		navigation.addListener ('willFocus', () => {
+			this.getList();
+		});
 	}
 	
 	async getList(){
+		console.log("getting list")
 		//this.props....user_id = the id of the user logged in
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/" + this.props.navigation.state.params.followingFollowers)
 			.then((response) => response.json())

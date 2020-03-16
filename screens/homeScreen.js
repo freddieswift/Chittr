@@ -62,7 +62,7 @@ class homeScreen extends Component {
 		this.getToken();
 		this.getID();
 		
-		this.findCoordinates();
+		//this.findCoordinates();
 		
 		const {navigation} = this.props;
 		navigation.addListener ('willFocus', () => {
@@ -77,7 +77,7 @@ class homeScreen extends Component {
 	}
 	
 	findCoordinates() {
-		console.log("finding coords")
+		//console.log("finding coords")
 		if(!this.state.locationPermission){
 			this.state.locationPermission = this.requestLocationPermission();
 		}
@@ -85,6 +85,8 @@ class homeScreen extends Component {
 			(position) => {
 				const location = JSON.stringify(position);
 				this.setState({location});
+				console.log("location",location)
+				this.postChitt();
 			},
 			
 			(error) => {
@@ -99,6 +101,8 @@ class homeScreen extends Component {
 			
 			
 		);
+		
+		
 	}
 	
 	async requestLocationPermission(){
@@ -114,11 +118,11 @@ class homeScreen extends Component {
 				},
 			);
 			if (granted === PermissionsAndroid.RESULTS.GRANTED){
-				console.log('You can access location');
+				//console.log('You can access location');
 				return true;
 			}
 			else{
-				console.log('Location Permission Denied');
+				//console.log('Location Permission Denied');
 				return false;
 			}
 		}
@@ -129,14 +133,14 @@ class homeScreen extends Component {
 	
 	getChits(){
 		let headers;
-		console.log("logged in", this.state.loggedIn)
+		//console.log("logged in", this.state.loggedIn)
 		if (this.state.loggedIn == true){
 			headers = {headers: {"X-Authorization" : this.state.token}}
 		}
 		else{
 			headers = {}
 		}
-		console.log(headers) 
+		//console.log(headers) 
 		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits', headers)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -196,8 +200,20 @@ class homeScreen extends Component {
 		this.getChits();
 	}
 	
+	/* postChitt(){
+		await this.findCoordinates();
+		this.postChitt2();
+	} */
+	
 	async postChitt(){
 		try{
+			//this.findCoordinates();
+			const location = JSON.parse(this.state.location);
+			const latitude = location.coords.latitude;
+			const longitude = location.coords.longitude;
+			const timestamp = location.timestamp;
+			//console.log("lat", latitude, "long", longitude, "timestamp", timestamp)
+			
 			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/chits",
 			{
 				method: 'POST',
@@ -207,9 +223,9 @@ class homeScreen extends Component {
 				},
 				body: JSON.stringify({
 					chit_id: 0,
-					timestamp: 0,
+					timestamp: timestamp,
 					chit_content: this.state.chitt,
-					location: {longitude: 0, latitude: 0},
+					location: {longitude: longitude, latitude: latitude},
 					user: {
 						email: this.state.email,
 						password: this.state.password
@@ -232,6 +248,7 @@ class homeScreen extends Component {
 			
 		}
 		catch(error){
+			Alert.alert("Unable to Post chit")
 			console.log(error.message)
 		}
 		
@@ -332,7 +349,7 @@ class homeScreen extends Component {
 							<View style={styles.button}>
 								<Button style={styles.button}
 									title="Post"
-									onPress={ () => this.postChitt()}
+									onPress={ () => this.findCoordinates()}
 								/>
 							</View>
 							

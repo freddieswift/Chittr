@@ -155,30 +155,46 @@ class userProfile extends Component{
 		// however this is allowed by the server
 		
 		let followButton;
+		let editFollowUnfollowButton;
 		if (this.state.id != this.props.navigation.state.params.user_id){
 			
+			
+		
 			if (this.state.following == false){
-				followButton = 
+				editFollowUnfollowButton = 
 				<View style={styles.buttonContainer}>
 					<Button 
+						color='orchid'
 						title="follow"
-						color='palevioletred'
+						
 						onPress = {() => this.followUser(this.props.navigation.state.params.user_id)}
 					/>
 				</View>
 			}
+			
 			else {
-				followButton = 
+				editFollowUnfollowButton = 
 				<View style={styles.buttonContainer}>
 					<Button 
+						color='orchid'
 						title="unfollow"
-						color='palevioletred'
+						
 						onPress = {() => this.unFollowUser(this.props.navigation.state.params.user_id)}
 					/>
 				</View>
 			}
 			
 			
+		}
+		else{
+			editFollowUnfollowButton = 
+				<View style = {styles.buttonContainer}>
+					<Button 
+						color='orchid'
+						title="Edit"
+						onPress = {() => this.props.navigation.navigate('editProfile', {userDetails: this.state.userDetails})}
+					/>
+				</View>
 		}
 		
 		const userDetails = this.state.userDetails;
@@ -187,18 +203,19 @@ class userProfile extends Component{
 				<View style={styles.headerBar}>
 					<View style={styles.buttonContainer}>
 						<Button
+							color='orchid'
 							title="Back"
 							onPress={() => this.props.navigation.goBack()}
 						/>
 					</View>
 					<Text style={styles.chittrHeaderText}>Chittr</Text>
-					<View style={styles.ghostButtonContainer}/>
+					{editFollowUnfollowButton}
 				</View>
 				<View style={styles.infoContainer}>
 					<View style={styles.userInfoContainer}>
 						<Text style = {styles.userInfoText}>{this.state.userDetails.given_name + " " + this.state.userDetails.family_name}</Text>
 					</View>
-					{followButton}
+					
 					<View style={styles.buttonContainer}>
 						<Button 
 							title="followers"
@@ -258,13 +275,14 @@ const styles = StyleSheet.create({
 	
 	buttonContainer: {
 		padding: 5,
+		color: 'orchid',
 	},
 	
-	ghostButtonContainer: {
+	/* ghostButtonContainer: {
 		padding: 5,
 		color: 'palevioletred',
 		width: 55
-	},
+	}, */
 	
 	infoContainer:{
 		flex: 8,
