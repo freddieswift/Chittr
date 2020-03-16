@@ -21,6 +21,11 @@ class userProfile extends Component{
 	componentDidMount(){
 		this.getUserDetails()
 		this.getData()
+		
+		const {navigation} = this.props;
+		navigation.addListener ('willFocus', () => {
+			this.getUserDetails()
+		});
 	}
 	
 	
@@ -192,7 +197,7 @@ class userProfile extends Component{
 					<Button 
 						color='orchid'
 						title="Edit"
-						onPress = {() => this.props.navigation.navigate('editProfile', {userDetails: this.state.userDetails})}
+						onPress = {() => this.props.navigation.navigate('editProfile', {userDetails: this.state.userDetails, user_id: this.props.navigation.state.params.user_id})}
 					/>
 				</View>
 		}
