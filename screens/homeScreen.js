@@ -26,10 +26,12 @@ class homeScreen extends Component {
 	logoutOption = () => {
 		this.logoutCall();
 		this._menu.hide();
+		
 	};
 	
 	myAccount = () => {
 		this.props.navigation.navigate('userProfile', {user_id: this.state.id});
+		
 		this._menu.hide();
 	}
 	
@@ -62,6 +64,7 @@ class homeScreen extends Component {
 		navigation.addListener ('willFocus', () => {
 			this.getToken();
 			this.getID();
+			//this.getChits();
 		});
 	}
 	
@@ -71,7 +74,16 @@ class homeScreen extends Component {
 	
 	
 	getChits(){
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits')
+		let headers;
+		console.log("logged in", this.state.loggedIn)
+		if (this.state.loggedIn == true){
+			headers = {headers: {"X-Authorization" : this.state.token}}
+		}
+		else{
+			headers = {}
+		}
+		console.log(headers) 
+		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits', headers)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				if (this._isMounted){
@@ -110,6 +122,7 @@ class homeScreen extends Component {
 				else{
 					this.setState({loggedIn: false});
 				}
+				this.getChits();
 			}
 			catch(error){
 				console.log(error.message)
@@ -121,12 +134,12 @@ class homeScreen extends Component {
 		try{
 			await AsyncStorage.removeItem(_TOKEN)
 			await AsyncStorage.removeItem(_ID)
-			//to make button change back to login
 			this.setState({loggedIn: false});
 		}
 		catch(error){
 			console.log(error.message)
 		}
+		this.getChits();
 	}
 	
 	async postChitt(){
@@ -151,11 +164,24 @@ class homeScreen extends Component {
 				})
 			});
 			
+			const status = await response.status;
+			
+			if (status == 401){
+				Alert.alert("Unable to Post chit")
+			}
+			
+			else if (status == 201){
+				this.getChits();
+				this.setState({modalOpen: false})
+			}
+			
 			
 		}
 		catch(error){
 			console.log(error.message)
 		}
+		
+		
 	}
 	
 	async logoutCall(){
@@ -177,6 +203,7 @@ class homeScreen extends Component {
 			
 			else if (status == 200){
 				this.deleteData();
+				
 			}
 			
 			else {

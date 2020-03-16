@@ -31,9 +31,8 @@ class userProfile extends Component{
 			.then((responseJson) => {
 				this.state.followingList = responseJson
 				const followingBool = this.checkIfFollowing()
-				console.log("following bool", followingBool)
+				
 				if(followingBool == true){
-					//this.state.following = true;
 					this.setState({
 						following: true
 					})
@@ -42,7 +41,7 @@ class userProfile extends Component{
 					this.setState({
 						following: false
 					})
-					//this.state.following = false;
+
 				}
 				this.setState({
 					refresh: !this.state.refresh
@@ -75,7 +74,6 @@ class userProfile extends Component{
 		)
 		.then((response) => {
 			const status = response.status
-			console.log("status", status)
 			if (status == 200){
 				Alert.alert("Successfully unfollowed user")
 			}
@@ -157,7 +155,6 @@ class userProfile extends Component{
 		// however this is allowed by the server
 		
 		let followButton;
-		console.log("following",this.state.following)
 		if (this.state.id != this.props.navigation.state.params.user_id){
 			
 			if (this.state.following == false){
