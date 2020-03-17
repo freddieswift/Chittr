@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
+
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
+
 class followersScreen extends Component{
 	constructor(props){
 		super(props);
@@ -19,7 +23,7 @@ class followersScreen extends Component{
 	
 	async getList(){
 		//this.props....user_id = the id of the user logged in
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/" + this.props.navigation.state.params.followingFollowers)
+		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/" + this.props.navigation.state.params.followingFollowers)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				this.state.list = responseJson
@@ -39,6 +43,7 @@ class followersScreen extends Component{
 					<View style={styles.buttonContainer}>
 						<Button
 							title="Back"
+							color='orchid'
 							onPress={() => this.props.navigation.goBack()}
 						/>
 					</View>

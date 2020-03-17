@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert } from 'react-native';
 
+
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
+
+
 class signUpScreen extends Component{
 	constructor(props) {
         super(props);
@@ -13,7 +18,7 @@ class signUpScreen extends Component{
     }
 	
 	createAccount(){
-		return fetch("http://10.0.2.2:3333/api/v0.0.5/user",
+		return fetch('http://' + ip + ':3333/api/v0.0.5/user',
 		{
 			method: 'POST',
 			headers:{

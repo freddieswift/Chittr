@@ -4,6 +4,9 @@ import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from '
 const _TOKEN = 'token';
 const _ID = 'id';
 
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
+
 class loginScreen extends Component{
 	
 	
@@ -54,7 +57,7 @@ class loginScreen extends Component{
 		
 	async login(){
 		try{
-			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/login",
+			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/login',
 			{
 				method: 'POST',
 				headers:{

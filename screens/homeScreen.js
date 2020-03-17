@@ -3,6 +3,8 @@ import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, 
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import Geolocation from 'react-native-geolocation-service';
 
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 const _TOKEN = 'token';
 const _ID = 'id';
@@ -141,7 +143,8 @@ class homeScreen extends Component {
 			headers = {}
 		}
 		//console.log(headers) 
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/chits', headers)
+		return fetch('http://' + ip + ':3333/api/v0.0.5/chits', headers)
+		
 			.then((response) => response.json())
 			.then((responseJson) => {
 				if (this._isMounted){
@@ -214,7 +217,7 @@ class homeScreen extends Component {
 			const timestamp = location.timestamp;
 			//console.log("lat", latitude, "long", longitude, "timestamp", timestamp)
 			
-			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/chits",
+			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/chits',
 			{
 				method: 'POST',
 				headers:{
@@ -257,7 +260,7 @@ class homeScreen extends Component {
 	
 	async logoutCall(){
 		try{
-			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/logout",
+			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/logout',
 			{
 				method: 'POST',
 				headers:{
@@ -308,7 +311,7 @@ class homeScreen extends Component {
 				<View>
 					<Menu
 						ref={this.setMenuRef}
-						button ={<Button title="Options" onPress={this.showMenu}></Button>}
+						button ={<Button title="Options" color='orchid' onPress={this.showMenu}></Button>}
 					>
 						<MenuItem onPress={this.logoutOption}>Log Out</MenuItem>
 						<MenuItem onPress={this.myAccount}>My Account</MenuItem>
@@ -318,7 +321,10 @@ class homeScreen extends Component {
 		else{
 			loginOptionsButton = <Button
 				onPress={() => this.props.navigation.navigate('login')}
-				title="Login">
+				title="Login"
+				color='orchid'
+				>
+				
 			</Button>
 		}
 		
@@ -349,6 +355,7 @@ class homeScreen extends Component {
 							<View style={styles.button}>
 								<Button style={styles.button}
 									title="Post"
+									color='orchid'
 									onPress={ () => this.findCoordinates()}
 								/>
 							</View>
@@ -356,6 +363,7 @@ class homeScreen extends Component {
 							<View style={styles.button}>
 								<Button
 									title="Back"
+									color='orchid'
 									onPress={ () => {this.setState({modalOpen: false})}}
 								/>
 							</View>	
@@ -374,6 +382,7 @@ class homeScreen extends Component {
 					<View>
 						<Button
 							title="Search"
+							color='orchid'
 							onPress={ () => this.props.navigation.navigate('search')}
 						/>
 					</View>

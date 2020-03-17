@@ -3,6 +3,9 @@ import { View, Text, Button, FlatList, StyleSheet, TextInput, TouchableOpacity, 
 
 const _TOKEN = 'token';
 
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
+
 class searchScreen extends Component{
 	constructor(props) {
         super(props);
@@ -13,7 +16,7 @@ class searchScreen extends Component{
     }
 	
 	search(){
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/search_user?q=' + this.state.query)
+		return fetch('http://' + ip + ':3333/api/v0.0.5/search_user?q=' + this.state.query)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				this.state.result = responseJson
@@ -37,6 +40,7 @@ class searchScreen extends Component{
 					<View style={styles.buttonContainer}>
 						<Button
 							title="Back"
+							color='orchid'
 							onPress={() => this.props.navigation.goBack()}
 						/>
 					</View>
@@ -46,12 +50,14 @@ class searchScreen extends Component{
 				<View style={styles.infoContainer}>
 					<TextInput
 						style={styles.inputField}
+
 						onChangeText={(query) => this.setState({query})}
 						placeholder='Search'
 					/>
 					<View style={styles.buttonContainer}>
 						<Button
 							title="search"
+							color='orchid'
 							onPress={() => this.search()}
 						/>
 					</View>

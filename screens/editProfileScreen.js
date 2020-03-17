@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
 
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
+
 const _TOKEN = 'token';
 const _ID = 'id';
 
@@ -52,7 +55,7 @@ class editProfileScreen extends Component{
 	async updateUser(){
 		if(this.state.password == this.state.retypePassword){
 			try{
-				const response = await fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.state.id,
+				const response = await fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.state.id,
 				{
 					method:'PATCH',
 					headers:{

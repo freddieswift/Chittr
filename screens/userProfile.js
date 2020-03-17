@@ -4,6 +4,8 @@ import { View, Text, Button, FlatList, StyleSheet, TextInput, Alert, AsyncStorag
 const _TOKEN = 'token';
 const _ID = 'id';
 
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 class userProfile extends Component{
 	constructor(props) {
@@ -31,7 +33,7 @@ class userProfile extends Component{
 	
 	//gets the list of followers for the currently logged in user
 	async getFollowingList(){
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.state.id + "/following")
+		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.state.id + "/following")
 			.then((response) => response.json())
 			.then((responseJson) => {
 				this.state.followingList = responseJson
@@ -56,7 +58,7 @@ class userProfile extends Component{
 	}
 	
 	async getUserDetails(){
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
+		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				this.state.userDetails = responseJson
@@ -68,7 +70,7 @@ class userProfile extends Component{
 	}
 	
 	async unFollowUser(id){
-		return fetch('http://10.0.2.2:3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/follow",
+		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/follow",
 			{
 				method:'delete',
 				headers:{
@@ -107,7 +109,7 @@ class userProfile extends Component{
 	async followUser(id){
 		try{
 			const token = this.state.token
-			const response = await fetch("http://10.0.2.2:3333/api/v0.0.5/user/" + this.props.navigation.state.params.user_id + "/follow",
+			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + '/follow',
 			{
 				method: 'POST',
 				headers:{
