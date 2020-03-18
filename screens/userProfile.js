@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TextInput, Alert, AsyncStorage } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, Image, TextInput, Alert, AsyncStorage } from 'react-native';
+import { RNCamera } from 'react-native-camera';
 
 const _TOKEN = 'token';
 const _ID = 'id';
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 class userProfile extends Component{
 	constructor(props) {
@@ -226,17 +227,26 @@ class userProfile extends Component{
 					<View style={styles.buttonContainer}>
 						<Button 
 							title="followers"
-							color='palevioletred'
+							color='orchid'
 							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "followers", user_id: this.props.navigation.state.params.user_id})}
 						/>
 					</View>
 					<View style={styles.buttonContainer}>
 						<Button 
 							title="following"
-							color='palevioletred'
+							color='orchid'
 							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "following", user_id: this.props.navigation.state.params.user_id})}
 						/>
 					</View>
+
+					<View style={styles.buttonContainer}>
+						<Button 
+							title="camera"
+							color='orchid'
+							onPress = {() => this.props.navigation.navigate('camera')}
+						/>
+					</View>
+
 					<View style={styles.chitList}>
 						<FlatList
 							data={userDetails.recent_chits}

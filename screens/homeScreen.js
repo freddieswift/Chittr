@@ -3,8 +3,8 @@ import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, 
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import Geolocation from 'react-native-geolocation-service';
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 const _TOKEN = 'token';
 const _ID = 'id';
