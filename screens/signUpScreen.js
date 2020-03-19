@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert } from 'react-native';
 
 
-const ip = '192.168.0.28';
-//const ip = '10.0.2.2';
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 
 class signUpScreen extends Component{

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, Image, TextInput, Alert, AsyncStorage } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Image, Modal, TextInput, Alert, AsyncStorage } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
 const _TOKEN = 'token';
 const _ID = 'id';
 
-const ip = '192.168.0.28';
-//const ip = '10.0.2.2';
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 class userProfile extends Component{
 	constructor(props) {
@@ -16,7 +16,9 @@ class userProfile extends Component{
 			token:'',
 			id: '',
 			followingList: [],
-			following: false
+			following: false,
+			modalOpen: false,
+			userImage: 'placeholder'
 		}
 			
     }
@@ -28,6 +30,7 @@ class userProfile extends Component{
 		const {navigation} = this.props;
 		navigation.addListener ('willFocus', () => {
 			this.getUserDetails()
+
 		});
 	}
 	
@@ -66,6 +69,7 @@ class userProfile extends Component{
 				this.setState({
 					refresh: !this.state.refresh
 				})
+				this.setState({userImage: 'http://' + ip + ':3333/api/v0.0.5/user/' + this.state.id + '/photo'})
 			})
 			.catch((error) => {console.log(error);});
 	}
@@ -118,6 +122,8 @@ class userProfile extends Component{
 					"X-Authorization": token
 				},
 			});
+
+
 			
 			const status = await response.status;
 			
@@ -137,6 +143,70 @@ class userProfile extends Component{
 			console.log(error.message)
 		}
 	}
+
+
+	async takePicture(){
+
+		if (this.camera){
+			const options = {quality:0.5, base64:true}
+			const data = await this.camera.takePictureAsync(options);
+			//console.log(data)
+			console.log(data.uri, this.state.token);
+
+			try{
+				const response = await fetch('http://' + ip + ':3333/api/v0.0.5/user/photo',
+				{
+					method: 'POST',
+					headers:{
+						"Content-Type": "image/jpeg",
+						"X-Authorization": this.state.token
+					},
+					body: data
+				});
+
+				const status = response.status;
+
+				if (status == 201){
+					Alert.alert("Successfully Updated Photo")
+					this.setState({modalOpen: false})
+				}
+				else{
+					Alert.alert("Unable to Update Photo")
+				}
+			}
+			catch(error){
+				console.log("updatuing photo error", error.message)
+			}
+		}
+
+		
+	}
+
+	// async getPicture(){
+	// 	try{
+	// 		const response = await fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.state.id + '/photo',{
+	// 			method: 'GET'
+	// 		});
+
+	// 		const status = response.status;
+
+	// 		if(status == 200){
+	// 			this.state.userImage = response.url;
+	// 		}
+	// 		else{
+	// 			console.log("unable to get user profile image1");
+	// 		}
+
+	// 		console.log("getPictre", this.state.userImage)
+	// 		this.setState({
+	// 				refresh: !this.state.refresh
+	// 			})
+
+	// 	}
+	// 	catch(error){
+	// 		console.log("unable to get user profile image2", error.message);
+	// 	}
+	// }
 	
 	async getData(){
 		try{
@@ -149,14 +219,19 @@ class userProfile extends Component{
 				this.setState({id: id})
 			}
 			this.getFollowingList()
+			
 		}
 		catch(error){
 			console.log(error.message)
 		}
 	}
+
 	
 	render(){
+
+
 		
+		console.log("reander", this.state.userImage)
 		// check to see if the profile that is being loaded is the one for the logged in user
 		// if it is not then display the option to follow the user displayed
 		// should not be able to follow yourself
@@ -207,7 +282,41 @@ class userProfile extends Component{
 		
 		const userDetails = this.state.userDetails;
 		return(
+
+			
+
+
+
 			<View style = {styles.container}>
+				<Modal visible={this.state.modalOpen} animationType='slide'>
+				
+					<RNCamera
+						ref={ref => {
+							this.camera=ref;
+						}}
+						style = {{flex: 1, width:'100%',}}
+					>
+					</RNCamera>
+				
+
+					<View style={styles.buttonContainer}>
+						<Button
+							title="Take Image"
+							color='orchid'
+							onPress={ () => {this.takePicture()}}
+						/>
+					</View>
+
+					<View style={styles.buttonContainer}>
+						<Button
+							title="Back"
+							color='orchid'
+							onPress={ () => {this.setState({modalOpen: false})}}
+						/>
+					</View>	
+	
+
+				</Modal>
 				<View style={styles.headerBar}>
 					<View style={styles.buttonContainer}>
 						<Button
@@ -219,33 +328,43 @@ class userProfile extends Component{
 					<Text style={styles.chittrHeaderText}>Chittr</Text>
 					{editFollowUnfollowButton}
 				</View>
-				<View style={styles.infoContainer}>
-					<View style={styles.userInfoContainer}>
+
+				<View style={styles.imageContainer}>
+					<TouchableOpacity onPress={() => this.setState({modalOpen: true})}>
+						<Image
+							style={styles.image}
+							source={{uri: this.state.userImage}}
+						/>
+					</TouchableOpacity>
+				</View>
+
+				<View style={styles.userInfoContainer}>
 						<Text style = {styles.userInfoText}>{this.state.userDetails.given_name + " " + this.state.userDetails.family_name}</Text>
-					</View>
-					
-					<View style={styles.buttonContainer}>
+				</View>
+
+				<View style={styles.followContainer}>
+					<View style={styles.followingFollowersButtonContainer}>
 						<Button 
 							title="followers"
 							color='orchid'
 							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "followers", user_id: this.props.navigation.state.params.user_id})}
 						/>
 					</View>
-					<View style={styles.buttonContainer}>
+					<View style={styles.followingFollowersButtonContainer}>
 						<Button 
 							title="following"
 							color='orchid'
 							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "following", user_id: this.props.navigation.state.params.user_id})}
 						/>
 					</View>
+				</View>
 
-					<View style={styles.buttonContainer}>
-						<Button 
-							title="camera"
-							color='orchid'
-							onPress = {() => this.props.navigation.navigate('camera')}
-						/>
-					</View>
+				<View style={styles.infoContainer}>
+					
+					
+					
+
+					
 
 					<View style={styles.chitList}>
 						<FlatList
@@ -287,29 +406,58 @@ const styles = StyleSheet.create({
         fontFamily: 'Courier New',
         fontSize: 30,
     },
+
+    cameraButtonContainer: {
+		padding: 5,
+		position : 'absolute'
+	},
 	
 	
+	followingFollowersButtonContainer:{
+		flex: 1,
+		padding: 5
+	},
 	
 	buttonContainer: {
-		padding: 5,
-		color: 'orchid',
-	},
-	
-	/* ghostButtonContainer: {
-		padding: 5,
-		color: 'palevioletred',
-		width: 55
-	}, */
-	
-	infoContainer:{
-		flex: 8,
-	},
-	
-	userInfoContainer:{
 		
+		padding: 5,
+		backgroundColor: 'transparent',
+
+	},
+
+	followContainer: {
+		flex: 0.7,
+		flexDirection: 'row',
+		
+		justifyContent: 'space-between'
+	},
+
+
+	
+	infoContainer: {
+		flex: 5,
+	},
+
+	imageContainer: {
+		flex: 2,
+		backgroundColor: 'palevioletred',
+		margin: 5,
+		marginBottom: 0,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+
+	image: {
+		width: 115,
+		height: 115
+	},
+	
+	userInfoContainer: {
+		flex: 1,
 		backgroundColor: 'palevioletred',
 		alignItems: 'center',
-		margin: 5
+		margin: 5,
+		marginTop:0
 	},
 	
 	chitList:{

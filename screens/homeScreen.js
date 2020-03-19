@@ -3,8 +3,8 @@ import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, 
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import Geolocation from 'react-native-geolocation-service';
 
-const ip = '192.168.0.28';
-//const ip = '10.0.2.2';
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 const _TOKEN = 'token';
 const _ID = 'id';
@@ -203,19 +203,12 @@ class homeScreen extends Component {
 		this.getChits();
 	}
 	
-	/* postChitt(){
-		await this.findCoordinates();
-		this.postChitt2();
-	} */
-	
 	async postChitt(){
 		try{
-			//this.findCoordinates();
 			const location = JSON.parse(this.state.location);
 			const latitude = location.coords.latitude;
 			const longitude = location.coords.longitude;
 			const timestamp = location.timestamp;
-			//console.log("lat", latitude, "long", longitude, "timestamp", timestamp)
 			
 			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/chits',
 			{
@@ -303,7 +296,7 @@ class homeScreen extends Component {
 		if (loggedIn){
 			
 			fab = 
-				<TouchableOpacity style={styles.fab} onPress={() => this.setState({modalOpen: true})}>
+				<TouchableOpacity style={styles.fab} onPress={() => {this.setState({modalOpen: true})}}>
 					<Text style={styles.fabText}>+</Text>
 				</TouchableOpacity>
 			
@@ -407,10 +400,7 @@ class homeScreen extends Component {
 						//keyExtractor={item=>item.id}
 					/>
 				</View>
-				
-				
-				
-				
+								
 				{fab}
             </View>
         );
