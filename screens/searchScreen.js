@@ -3,8 +3,8 @@ import { View, Text, Button, FlatList, StyleSheet, TextInput, TouchableOpacity, 
 
 const _TOKEN = 'token';
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 class searchScreen extends Component{
 	constructor(props) {
@@ -15,6 +15,10 @@ class searchScreen extends Component{
 		};
     }
 	
+
+	// function to search for a user
+	// uses the query entered by the user in the box to search
+	// stores the result in state so it can the be rendered in the flat list
 	search(){
 		return fetch('http://' + ip + ':3333/api/v0.0.5/search_user?q=' + this.state.query)
 			.then((response) => response.json())
@@ -39,7 +43,7 @@ class searchScreen extends Component{
 				<View style={styles.headerBar}>
 					<View style={styles.buttonContainer}>
 						<Button
-							title="Back"
+							title="Back "
 							color='orchid'
 							onPress={() => this.props.navigation.goBack()}
 						/>
@@ -56,7 +60,7 @@ class searchScreen extends Component{
 					/>
 					<View style={styles.buttonContainer}>
 						<Button
-							title="search"
+							title="Search "
 							color='orchid'
 							onPress={() => this.search()}
 						/>

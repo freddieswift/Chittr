@@ -5,8 +5,8 @@ import { RNCamera } from 'react-native-camera';
 const _TOKEN = 'token';
 const _ID = 'id';
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 class userProfile extends Component{
 	constructor(props) {
@@ -18,24 +18,32 @@ class userProfile extends Component{
 			followingList: [],
 			following: false,
 			modalOpen: false,
-			userImage: 'placeholder'
+			userImage: '...',
+			imageHash: Date.now()
 		}
 			
     }
 	
+
+	//called when the page first loads
+	//gets the neccessary data so the right components can be loaded
 	componentDidMount(){
 		this.getUserDetails()
 		this.getData()
 		
+
+		//willFocus listener means everytime to page comes back into focus, the details can be reloaded
+		// userful for when the user is on the edit details page and presses back, so the updated details will be displayed
 		const {navigation} = this.props;
 		navigation.addListener ('willFocus', () => {
 			this.getUserDetails()
-
+			
 		});
 	}
 	
 	
 	//gets the list of followers for the currently logged in user
+	// sets following to be true or false so that the follow/unfollow button can be updated
 	async getFollowingList(){
 		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.state.id + "/following")
 			.then((response) => response.json())
@@ -61,6 +69,10 @@ class userProfile extends Component{
 			.catch((error) => {console.log("getfollowing list",error);})
 	}
 	
+
+	//function to get the current user's details to display on screen
+	// uses the id passed in when clicking on the user in the list on the previous screen
+	// the profile picture is also loaded
 	async getUserDetails(){
 		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id)
 			.then((response) => response.json())
@@ -69,11 +81,28 @@ class userProfile extends Component{
 				this.setState({
 					refresh: !this.state.refresh
 				})
-				this.setState({userImage: 'http://' + ip + ':3333/api/v0.0.5/user/' + this.state.id + '/photo'})
+				this.loadImage()
 			})
 			.catch((error) => {console.log(error);});
 	}
+
+
+	//function to load the profile picture of the user who's profile it is
+	// + Date.now() used to get the app to contact the server again,
+	//without this the app seemed to use a cached version of the image. A different
+	// uri for the image meant when the image was re rendered it would actually contact the server. 
+	//Date.now() as a paraemter on the end does not affect the query to the server
+	// seems a bit hacky but couldnt find another solution, however the image doe take a while to load
+	// this reloads the image because the image component relies in this.state.userImage
+	// so when this.state.userImage is changed, the Image component reloads
+	loadImage(){
+		this.setState({userImage: 'http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + '/photo?time=' + Date.now()})
+	}
 	
+
+	//function to unfollow user
+	//uses the user id passed in during the navigation
+	//reloads the user's following list so the button can be updated to follow
 	async unFollowUser(id){
 		return fetch('http://' + ip + ':3333/api/v0.0.5/user/' + this.props.navigation.state.params.user_id + "/follow",
 			{
@@ -111,6 +140,10 @@ class userProfile extends Component{
 		return false;
 	}
 	
+
+	//function to follow a user
+	//uses the id of the user passed during the navigation to the profile
+	//then reloads the users following list so the button can be updated to unfollow
 	async followUser(id){
 		try{
 			const token = this.state.token
@@ -145,13 +178,15 @@ class userProfile extends Component{
 	}
 
 
+
+	// function to take a picture and send it to the server
+	// sends the data captured from RNCamera
+	// if successful, then the camera is closed and the profile picture is reloaded
 	async takePicture(){
 
 		if (this.camera){
 			const options = {quality:0.5, base64:true}
 			const data = await this.camera.takePictureAsync(options);
-			//console.log(data)
-			console.log(data.uri, this.state.token);
 
 			try{
 				const response = await fetch('http://' + ip + ':3333/api/v0.0.5/user/photo',
@@ -168,6 +203,7 @@ class userProfile extends Component{
 
 				if (status == 201){
 					Alert.alert("Successfully Updated Photo")
+					this.loadImage()
 					this.setState({modalOpen: false})
 				}
 				else{
@@ -208,6 +244,9 @@ class userProfile extends Component{
 	// 	}
 	// }
 	
+
+	//function to get the id and token of the logged in user from async storage
+	//sets these values in state
 	async getData(){
 		try{
 			let token = await AsyncStorage.getItem(_TOKEN)
@@ -230,19 +269,27 @@ class userProfile extends Component{
 	render(){
 
 
-		
-		console.log("reander", this.state.userImage)
 		// check to see if the profile that is being loaded is the one for the logged in user
-		// if it is not then display the option to follow the user displayed
+		// if it is not then display the option to follow or unfollow the user displayed
 		// should not be able to follow yourself
+		// edit button will be displayed if it is the logged in user's profile
 		// however this is allowed by the server
 		
 		let followButton;
 		let editFollowUnfollowButton;
+		let profilePicture;
 		if (this.state.id != this.props.navigation.state.params.user_id){
-			
-			
+			// if not current user's profile, do not allow user to click on profile picture to change it
+			// no onPress prop
+			profilePicture = 
+				<Image
+					style={styles.image}
+					source={{uri: this.state.userImage}}
+				/>
 		
+			// if current user is not following the user who's profile is displayed
+			// set button to show follow
+			// clicking button will the follow said user
 			if (this.state.following == false){
 				editFollowUnfollowButton = 
 				<View style={styles.buttonContainer}>
@@ -255,6 +302,10 @@ class userProfile extends Component{
 				</View>
 			}
 			
+
+			//if current user is following the user who's profile is displayed
+			// set the button to show unfollow
+			//clikcing button will unfollow that user
 			else {
 				editFollowUnfollowButton = 
 				<View style={styles.buttonContainer}>
@@ -269,12 +320,25 @@ class userProfile extends Component{
 			
 			
 		}
+		// if profile is current user's, allow user to click on profile picture,
+		// which will open the camera to change the picture
 		else{
+			profilePicture = 
+				<TouchableOpacity onPress={() => this.setState({modalOpen: true})}>
+					<Image
+						style={styles.image}
+						source={{uri: this.state.userImage}}
+					/>
+				</TouchableOpacity>
+
+			//if profile is current user's, show edit button which will take the user to
+			// the edit profile screen
+			// pass the details of the user so they can be pre loaded into the input fields
 			editFollowUnfollowButton = 
 				<View style = {styles.buttonContainer}>
 					<Button 
 						color='orchid'
-						title="Edit"
+						title="Edit "
 						onPress = {() => this.props.navigation.navigate('editProfile', {userDetails: this.state.userDetails, user_id: this.props.navigation.state.params.user_id})}
 					/>
 				</View>
@@ -282,11 +346,6 @@ class userProfile extends Component{
 		
 		const userDetails = this.state.userDetails;
 		return(
-
-			
-
-
-
 			<View style = {styles.container}>
 				<Modal visible={this.state.modalOpen} animationType='slide'>
 				
@@ -301,7 +360,7 @@ class userProfile extends Component{
 
 					<View style={styles.buttonContainer}>
 						<Button
-							title="Take Image"
+							title="Take Image "
 							color='orchid'
 							onPress={ () => {this.takePicture()}}
 						/>
@@ -309,7 +368,7 @@ class userProfile extends Component{
 
 					<View style={styles.buttonContainer}>
 						<Button
-							title="Back"
+							title="Back "
 							color='orchid'
 							onPress={ () => {this.setState({modalOpen: false})}}
 						/>
@@ -321,7 +380,7 @@ class userProfile extends Component{
 					<View style={styles.buttonContainer}>
 						<Button
 							color='orchid'
-							title="Back"
+							title="Back "
 							onPress={() => this.props.navigation.goBack()}
 						/>
 					</View>
@@ -330,12 +389,7 @@ class userProfile extends Component{
 				</View>
 
 				<View style={styles.imageContainer}>
-					<TouchableOpacity onPress={() => this.setState({modalOpen: true})}>
-						<Image
-							style={styles.image}
-							source={{uri: this.state.userImage}}
-						/>
-					</TouchableOpacity>
+					{profilePicture }
 				</View>
 
 				<View style={styles.userInfoContainer}>
@@ -345,14 +399,14 @@ class userProfile extends Component{
 				<View style={styles.followContainer}>
 					<View style={styles.followingFollowersButtonContainer}>
 						<Button 
-							title="followers"
+							title="Followers "
 							color='orchid'
 							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "followers", user_id: this.props.navigation.state.params.user_id})}
 						/>
 					</View>
 					<View style={styles.followingFollowersButtonContainer}>
 						<Button 
-							title="following"
+							title="Following "
 							color='orchid'
 							onPress = {() => this.props.navigation.navigate('followers', {followingFollowers: "following", user_id: this.props.navigation.state.params.user_id})}
 						/>
@@ -360,12 +414,6 @@ class userProfile extends Component{
 				</View>
 
 				<View style={styles.infoContainer}>
-					
-					
-					
-
-					
-
 					<View style={styles.chitList}>
 						<FlatList
 							data={userDetails.recent_chits}
@@ -374,7 +422,6 @@ class userProfile extends Component{
 									<Text style = {styles.chittText}>{item.chit_content}</Text>
 								</View>
 							}
-							//keyExtractor={({id}, index) => id}
 							keyExtractor={item=>item.id}
 						/> 
 					</View>

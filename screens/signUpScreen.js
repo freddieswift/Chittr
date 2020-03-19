@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Alert } from 'react-native';
 
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 
 class signUpScreen extends Component{
@@ -17,6 +17,11 @@ class signUpScreen extends Component{
 		};
     }
 	
+
+    // function to create a user account
+	// uses the values in state to create a JSON string to send to the server
+	// if unsuccessfull, user is prompted
+	// if successfull, user taken to the login page
 	createAccount(){
 		return fetch('http://' + ip + ':3333/api/v0.0.5/user',
 		{
@@ -94,7 +99,7 @@ class signUpScreen extends Component{
 						<Button
 							color='palevioletred'
 							onPress={() => this.createAccount()}
-							title="Sign Up"
+							title="Sign Up "
 						/>
 					</View>
 					
@@ -102,7 +107,7 @@ class signUpScreen extends Component{
 						<Button
 							color='palevioletred'
 							onPress={() => this.props.navigation.navigate('login')}
-							title="Back"
+							title="Back "
 						/>
 					</View>
 				</View>	

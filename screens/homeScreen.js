@@ -3,8 +3,8 @@ import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, 
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import Geolocation from 'react-native-geolocation-service';
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 const _TOKEN = 'token';
 const _ID = 'id';
@@ -70,6 +70,7 @@ class homeScreen extends Component {
 		navigation.addListener ('willFocus', () => {
 			this.getToken();
 			this.getID();
+
 			//this.getChits();
 		});
 	}
@@ -304,7 +305,7 @@ class homeScreen extends Component {
 				<View>
 					<Menu
 						ref={this.setMenuRef}
-						button ={<Button title="Options" color='orchid' onPress={this.showMenu}></Button>}
+						button ={<Button title="Options " color='orchid' onPress={this.showMenu}></Button>}
 					>
 						<MenuItem onPress={this.logoutOption}>Log Out</MenuItem>
 						<MenuItem onPress={this.myAccount}>My Account</MenuItem>
@@ -314,7 +315,7 @@ class homeScreen extends Component {
 		else{
 			loginOptionsButton = <Button
 				onPress={() => this.props.navigation.navigate('login')}
-				title="Login"
+				title="Login "
 				color='orchid'
 				>
 				
@@ -374,7 +375,7 @@ class homeScreen extends Component {
 					<Text style={styles.chittrHeaderText}>Chittr</Text>	
 					<View>
 						<Button
-							title="Search"
+							title="Search "
 							color='orchid'
 							onPress={ () => this.props.navigation.navigate('search')}
 						/>

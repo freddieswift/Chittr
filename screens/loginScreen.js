@@ -4,8 +4,8 @@ import { View, Text, Button, StyleSheet, TextInput, Alert, AsyncStorage } from '
 const _TOKEN = 'token';
 const _ID = 'id';
 
-//const ip = '192.168.0.28';
-const ip = '10.0.2.2';
+const ip = '192.168.0.28';
+//const ip = '10.0.2.2';
 
 class loginScreen extends Component{
 	
@@ -127,21 +127,21 @@ class loginScreen extends Component{
 						<Button
 							color='palevioletred'
 							onPress={() => this.login()}
-							title="Login"
+							title="Login "
 						/>
 					</View>
 					<View style={styles.buttonContainer}>
 						<Button
 							color='palevioletred'
 							onPress={() => this.props.navigation.navigate('signUp')}
-							title="Sign Up"
+							title="Sign Up "
 						/>
 					</View>
 					<View style={styles.buttonContainer}>
 						<Button
 							color='palevioletred'
 							onPress={() => this.props.navigation.goBack()}
-							title="Back"
+							title="Back "
 						/>
 					</View>
 					
