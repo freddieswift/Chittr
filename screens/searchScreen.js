@@ -3,8 +3,8 @@ import { View, Text, Button, FlatList, StyleSheet, TextInput, TouchableOpacity, 
 
 const _TOKEN = 'token';
 
-const ip = '192.168.0.28';
-//const ip = '10.0.2.2';
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 class searchScreen extends Component{
 	constructor(props) {

@@ -3,11 +3,12 @@ import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, 
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import Geolocation from 'react-native-geolocation-service';
 
-const ip = '192.168.0.28';
-//const ip = '10.0.2.2';
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 const _TOKEN = 'token';
 const _ID = 'id';
+const _DRAFTSARRAY = 'drafts';
 
 class homeScreen extends Component {
 	_isMounted = false;
@@ -25,6 +26,11 @@ class homeScreen extends Component {
 		this._menu.show();
 	};
 	
+	drafts = () => {
+		this.props.navigation.navigate('drafts');
+		this._menu.hide();
+	}
+
 	logoutOption = () => {
 		this.logoutCall();
 		this._menu.hide();
@@ -51,7 +57,8 @@ class homeScreen extends Component {
 		  setModalOpen: false,
 		  chitt: '',
 		  location: null,
-		  locationPermission: false
+		  locationPermission: false,
+		  //draftsArray: ''
 	   }
 	   
 	   
@@ -64,22 +71,19 @@ class homeScreen extends Component {
 		this.getToken();
 		this.getID();
 		
-		//this.findCoordinates();
-		
 		const {navigation} = this.props;
 		navigation.addListener ('willFocus', () => {
 			this.getToken();
 			this.getID();
-
-			//this.getChits();
 		});
 	}
 	
 	componentWillUnmount(){
 		this._isMounted = false;
 	}
+
 	
-	findCoordinates() {
+	findCoordinates(postOrSave) {
 		//console.log("finding coords")
 		if(!this.state.locationPermission){
 			this.state.locationPermission = this.requestLocationPermission();
@@ -89,7 +93,13 @@ class homeScreen extends Component {
 				const location = JSON.stringify(position);
 				this.setState({location});
 				console.log("location",location)
-				this.postChitt();
+				if(postOrSave == "post"){
+					this.postChitt();
+				}
+				else if (postOrSave =="save"){
+					this.saveChitt();
+				}
+				
 			},
 			
 			(error) => {
@@ -107,6 +117,7 @@ class homeScreen extends Component {
 		
 		
 	}
+
 	
 	async requestLocationPermission(){
 		try {
@@ -158,6 +169,8 @@ class homeScreen extends Component {
 			})
 			.catch((error) => {console.log(error);});
 	}
+
+
 	
 	async getID(){
 		if (this._isMounted){
@@ -191,6 +204,8 @@ class homeScreen extends Component {
 			}
 		}
 	}
+
+
 	
 	async deleteData(){
 		try{
@@ -203,9 +218,35 @@ class homeScreen extends Component {
 		}
 		this.getChits();
 	}
+
+	async saveChitt(){
+		console.log("saving chitt")
+		const location = JSON.parse(this.state.location);
+		const latitude = location.coords.latitude;
+		const longitude = location.coords.longitude;
+		const timestamp = location.timestamp;
+		let draft = {
+			id: this.state.id,
+			chit_content: this.state.chitt,
+			location: {longitude: longitude, latitude: latitude},
+			
+		}
+
+		
+		try{
+			const drafts = await AsyncStorage.getItem(_DRAFTSARRAY);
+			console.log("getitem has returned", drafts)
+			const drafts2 = drafts ? JSON.parse(drafts) : [];
+			drafts2.push(draft)
+			await AsyncStorage.setItem(_DRAFTSARRAY, JSON.stringify(drafts2))
+			this.setState({modalOpen: false})
+		}
+		catch(error){console.log(error.message)}
+	}
 	
 	async postChitt(){
 		try{
+			console.log("posting chitt")
 			const location = JSON.parse(this.state.location);
 			const latitude = location.coords.latitude;
 			const longitude = location.coords.longitude;
@@ -309,6 +350,7 @@ class homeScreen extends Component {
 					>
 						<MenuItem onPress={this.logoutOption}>Log Out</MenuItem>
 						<MenuItem onPress={this.myAccount}>My Account</MenuItem>
+						<MenuItem onPress={this.drafts}>Drafts</MenuItem>
 					</Menu>
 				</View>
 		}
@@ -350,7 +392,15 @@ class homeScreen extends Component {
 								<Button style={styles.button}
 									title="Post"
 									color='orchid'
-									onPress={ () => this.findCoordinates()}
+									onPress={ () => this.findCoordinates("post")}
+								/>
+							</View>
+
+							<View style={styles.button}>
+								<Button
+									title="Save"
+									color='orchid'
+									onPress={ () => this.findCoordinates("save")}
 								/>
 							</View>
 							
@@ -361,6 +411,8 @@ class homeScreen extends Component {
 									onPress={ () => {this.setState({modalOpen: false})}}
 								/>
 							</View>	
+
+								
 							
 						
 						</View>
@@ -399,6 +451,7 @@ class homeScreen extends Component {
 						} 
 						keyExtractor={({id}, index) => id}
 						//keyExtractor={item=>item.id}
+
 					/>
 				</View>
 								

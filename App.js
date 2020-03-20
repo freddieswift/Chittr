@@ -9,7 +9,7 @@ import searchScreen from './screens/searchScreen';
 import userProfile from './screens/userProfile';
 import followersScreen from './screens/followersScreen';
 import editProfileScreen from './screens/editProfileScreen';
-import cameraScreen from './screens/cameraScreen';
+import draftsScreen from './screens/draftsScreen';
 
 const AppStackNav = createStackNavigator({
 	
@@ -20,7 +20,7 @@ const AppStackNav = createStackNavigator({
 	userProfile: { screen: userProfile, navigationOptions: {headerShown: false}},
 	followers: { screen: followersScreen, navigationOptions: {headerShown: false}},
 	editProfile: { screen: editProfileScreen, navigationOptions: {headerShown: false}},
-	camera: { screen: cameraScreen, navigationOptions: {headerShown: false}},
+	drafts: { screen: draftsScreen, navigationOptions: {headerShown: false}},
 });
 
 const AppContainer = createAppContainer(AppStackNav)

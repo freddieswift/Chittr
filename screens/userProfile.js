@@ -5,8 +5,8 @@ import { RNCamera } from 'react-native-camera';
 const _TOKEN = 'token';
 const _ID = 'id';
 
-const ip = '192.168.0.28';
-//const ip = '10.0.2.2';
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 class userProfile extends Component{
 	constructor(props) {
