@@ -132,11 +132,9 @@ class homeScreen extends Component {
 				},
 			);
 			if (granted === PermissionsAndroid.RESULTS.GRANTED){
-				//console.log('You can access location');
 				return true;
 			}
 			else{
-				//console.log('Location Permission Denied');
 				return false;
 			}
 		}
@@ -147,14 +145,12 @@ class homeScreen extends Component {
 	
 	getChits(){
 		let headers;
-		//console.log("logged in", this.state.loggedIn)
 		if (this.state.loggedIn == true){
 			headers = {headers: {"X-Authorization" : this.state.token}}
 		}
 		else{
 			headers = {}
 		}
-		//console.log(headers) 
 		return fetch('http://' + ip + ':3333/api/v0.0.5/chits', headers)
 		
 			.then((response) => response.json())
@@ -228,6 +224,7 @@ class homeScreen extends Component {
 		let draft = {
 			id: this.state.id,
 			chit_content: this.state.chitt,
+			timestamp: timestamp,
 			location: {longitude: longitude, latitude: latitude},
 			
 		}
@@ -237,6 +234,15 @@ class homeScreen extends Component {
 			const drafts = await AsyncStorage.getItem(_DRAFTSARRAY);
 			console.log("getitem has returned", drafts)
 			const drafts2 = drafts ? JSON.parse(drafts) : [];
+			console.log("draft2", drafts2.length)
+			let draft = {
+				id:drafts2.length,
+				user_id: this.state.id,
+				chit_content: this.state.chitt,
+				//timestamp: timestamp,
+				//location: {longitude: longitude, latitude: latitude},
+				
+			}
 			drafts2.push(draft)
 			await AsyncStorage.setItem(_DRAFTSARRAY, JSON.stringify(drafts2))
 			this.setState({modalOpen: false})
@@ -252,6 +258,18 @@ class homeScreen extends Component {
 			const longitude = location.coords.longitude;
 			const timestamp = location.timestamp;
 			
+			console.log(JSON.stringify({
+					chit_id: 0,
+					timestamp: timestamp,
+					chit_content: this.state.chitt,
+					location: {longitude: longitude, latitude: latitude},
+					user: {
+						email: this.state.email,
+						password: this.state.password
+					}
+					
+				}))
+
 			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/chits',
 			{
 				method: 'POST',

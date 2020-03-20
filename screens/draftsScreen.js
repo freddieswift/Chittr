@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, FlatList, TextInput, ActivityIndicator, Modal, Alert, TouchableOpacity, Button, AsyncStorage, PermissionsAndroid } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
 
 const _DRAFTSARRAY = 'drafts';
+const _TOKEN = 'token';
+
+//const ip = '192.168.0.28';
+const ip = '10.0.2.2';
 
 class draftsScreen extends Component{
 
 	constructor(props){
 		super(props);
-		this.state ={draftsArray: []}
+		this.state ={
+			draftsArray: [],
+			token:'',
+			location:''
+		}
 		
 	}
 
@@ -19,7 +28,21 @@ class draftsScreen extends Component{
 
 	componentDidMount(){
 		this.getDraftsArray()
+		this.getToken()
+	}
 
+	async getToken(){
+		
+		try{
+			let token = await AsyncStorage.getItem(_TOKEN)
+			if(token){
+				this.setState({token: token})
+			}
+		}
+		catch(error){
+			console.log(error.message)
+		}
+		
 	}
 
 	async getDraftsArray(){
@@ -34,6 +57,126 @@ class draftsScreen extends Component{
 		catch(error){
 			console.log(error.message)
 		}
+	}
+
+	findCoordinates(draft) {
+		//console.log("finding coords")
+		if(!this.state.locationPermission){
+			this.state.locationPermission = this.requestLocationPermission();
+		}
+		Geolocation.getCurrentPosition(
+			(position) => {
+				const location = JSON.stringify(position);
+				this.setState({location});
+				//console.log("location",location)
+					this.postChitt(draft);
+				
+				
+			},
+			
+			(error) => {
+				Alert.alert(error.message)
+			},
+			
+			{
+				enableHighAccuracy: true,
+				timeout: 20000,
+				maximumAge: 1000
+			}
+			
+			
+		);
+		
+		
+	}
+
+	
+	async requestLocationPermission(){
+		try {
+			const granted = await PermissionsAndroid.request(
+				PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+				{
+					title: 'Chittr Location Permission',
+					message: 'This app requires access to your location.',
+					buttonNeutral: 'Ask Me Later',
+					buttonMegative: 'Cancel',
+					buttonPositive: 'OK',
+				},
+			);
+			if (granted === PermissionsAndroid.RESULTS.GRANTED){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		catch(error){
+			console.log(error.message);
+		}
+	}
+
+	
+
+	async postChitt(draft){
+		try{
+			console.log("posting chitt")
+			const location = JSON.parse(this.state.location);
+			const latitude = location.coords.latitude;
+			const longitude = location.coords.longitude;
+			const timestamp = location.timestamp;
+			
+
+			console.log(JSON.stringify({
+					chit_id: 0,
+					timestamp: timestamp,
+					chit_content: draft.chit_content,
+					location: {longitude: longitude, latitude: latitude},
+					user: {
+						email: this.state.email,
+						password: this.state.password
+					}
+					
+				}))
+
+
+			const response = await fetch('http://' + ip + ':3333/api/v0.0.5/chits',
+			{
+				method: 'POST',
+				headers:{
+					"Content-Type": "application/json",
+					"X-Authorization" : this.state.token
+				},
+				body: JSON.stringify({
+					chit_id: 0,
+					timestamp: timestamp,
+					chit_content: draft.chit_content,
+					location: {longitude: longitude, latitude: latitude},
+					user: {
+						email: this.state.email,
+						password: this.state.password
+					}
+					
+				})
+			});
+			
+			const status = await response.status;
+			
+			if (status == 401){
+				Alert.alert("Unable to Post chit")
+			}
+			
+			else if (status == 201){
+				Alert.alert("Successfully posted chitt")
+			}
+			
+			
+		}
+		catch(error){
+			Alert.alert("Unable to Post chit")
+			console.log(error.message)
+		}
+		
+		
 	}
 
 	render(){
@@ -54,11 +197,13 @@ class draftsScreen extends Component{
 					<FlatList
 						data={this.state.draftsArray}
 						renderItem={({item}) =>
-							<View style={styles.chitt}>
-								<View>
-									<Text style = {styles.chittText}>{item.chit_content}</Text>
+							<TouchableOpacity onPress={() => this.findCoordinates(item)}>
+								<View style={styles.chitt}>
+									
+										<Text style = {styles.chittText}>{item.chit_content}</Text>
+									
 								</View>
-							</View>
+							</TouchableOpacity>
 						}
 						keyExtractor={({id}, index) => id}
 						
